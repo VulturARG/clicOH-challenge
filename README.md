@@ -43,6 +43,7 @@ Al crear o editar una orden validar q haya suficiente stock del producto, en cas
 error de validación.
 
 Para la implementación de la API se debe utilizar `ModelViewSet`, `ModelSerializer`.
+
 El código fuente de la api debe ser subido a un repositorio público, el cual debe ser proporcionado para su correcta
 examinación.
 
