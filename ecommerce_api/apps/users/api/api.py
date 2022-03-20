@@ -1,21 +1,22 @@
 from rest_framework import status
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from apps.users.models import User
-from apps.users.api.serializers import UserSerializer
+from apps.users.api.serializers import UserSerializer, UserListSerializer
 
 
-class UserApiView(APIView):
+class UserAPIView(APIView):
     """Global User API View"""
 
-    def get(self, request):
+    def get(self, request: Request) -> Response:
         """Get all users"""
 
-        users = User.objects.all()
-        users_serializer = UserSerializer(users, many=True)
+        users = User.objects.all().values('id', 'username', 'email', 'password')
+        users_serializer = UserListSerializer(users, many=True)
         return Response(users_serializer.data, status=status.HTTP_200_OK)
 
-    def post(self, request):
+    def post(self, request: Request) -> Response:
         """Create a new user"""
 
         users_serializer = UserSerializer(data=request.data)
@@ -26,10 +27,10 @@ class UserApiView(APIView):
         return Response(users_serializer.data, status=status.HTTP_201_CREATED)
 
 
-class UserDetailApiView(APIView):
+class UserDetailAPIView(APIView):
     """User Detail API View"""
 
-    def get(self, request, pk):
+    def get(self, request: Request, pk: int) -> Response:
         """Get a user"""
 
         user = User.objects.filter(pk=pk).first()
@@ -39,7 +40,7 @@ class UserDetailApiView(APIView):
         user_serializer = UserSerializer(user)
         return Response(user_serializer.data, status=status.HTTP_200_OK)
 
-    def put(self, request, pk):
+    def put(self, request: Request, pk: int) -> Response:
         """Update a user"""
 
         user = User.objects.filter(pk=pk).first()
@@ -50,7 +51,7 @@ class UserDetailApiView(APIView):
         user_serializer.save()
         return Response(user_serializer.data, status=status.HTTP_200_OK)
 
-    def delete(self, request, pk):
+    def delete(self, request: Request, pk: int) -> Response:
         """Delete a user"""
 
         user = User.objects.filter(pk=pk).first()
