@@ -1,4 +1,4 @@
-from typing import Optional, Any, Dict
+from typing import Optional, Any
 
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -16,7 +16,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             return self.get_serializer().Meta.model.objects.all()
         return self.get_serializer().Meta.model.objects.filter(id=pk).first()
 
-    def create(self, request: Any) -> Response:
+    def create(self, request: Any, *args, **kwargs) -> Response:
         """Create a new product"""
 
         serializer = self.serializer_class(data=request.data, validated_data=self.validated_data)
@@ -28,7 +28,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer.save()
         return Response({'message': 'product created'}, status=status.HTTP_201_CREATED)
 
-    def update(self, request: Any, pk: int = None) -> Response:
+    def update(self, request: Any, pk: Optional[int] = None, *args, **kwargs) -> Response:
         """Update a product"""
 
         queryset = self.get_queryset(pk)
@@ -50,7 +50,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         product_serializer.save()
         return Response({'message': 'updated product'}, status=status.HTTP_200_OK)
 
-    def destroy(self, request: Any, pk: int = None) -> Response:
+    def destroy(self, request: Any, pk: Optional[int] = None, *args, **kwargs) -> Response:
         """Delete a product"""
 
         queryset = self.get_queryset(pk)
