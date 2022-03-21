@@ -7,6 +7,7 @@ from apps.users.models import User
 
 class UserTestCase(APITestCase):
     list_url = reverse("api-user")
+    detail_url = reverse("api-user-detail", args=["1"])
 
     def setUp(self):
         self.user = User.objects.create_user(
@@ -26,7 +27,7 @@ class UserTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_an_existing_user(self):
-        response = self.client.get("/v1/users/1/")
+        response = self.client.get(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["username"], "wick")
 
@@ -58,18 +59,18 @@ class UserTestCase(APITestCase):
     def test_update_user(self):
         data = {
             "name": "Peter",
-            "last_name": "Parker",
+            "last_name": "Pan",
             "email": "peter@pepe.com",
             "username": "peter",
             "password": "jhg897453!",
         }
 
-        response = self.client.put("/v1/users/1/", data, format="json")
+        response = self.client.put(self.detail_url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["username"], "peter")
+        self.assertEqual(response.data["last_name"], "Pan")
 
     def test_delete_an_existing_user(self):
-        response = self.client.delete("/v1/users/1/")
+        response = self.client.delete(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["message"], "User deleted")
         
