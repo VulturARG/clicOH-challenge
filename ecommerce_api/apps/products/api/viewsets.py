@@ -4,10 +4,12 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 
 from apps.products.api.serialaizer import ProductSerializer
+from domain.vatidate.validate import Validate
 
 
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
+    validated_data = Validate()
 
     def get_queryset(self, pk: Optional[int] = None) -> Any:
         if pk is None:
@@ -17,7 +19,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     def create(self, request: Any) -> Response:
         """Create a new product"""
 
-        serializer = self.serializer_class(data=request.data)
+        serializer = self.serializer_class(data=request.data, validated_data=self.validated_data)
         if not serializer.is_valid():
             return Response(
                 {'message': 'error', 'error': serializer.errors},
@@ -36,7 +38,9 @@ class ProductViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        product_serializer = self.serializer_class(queryset, data=request.data)
+        product_serializer = self.serializer_class(
+            queryset, data=request.data, validated_data=self.validated_data
+        )
         if not product_serializer.is_valid():
             return Response(
                 {'message': 'error', 'error': product_serializer.errors},
@@ -56,7 +60,9 @@ class ProductViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        product_serializer = self.serializer_class(queryset, data=request.data)
+        product_serializer = self.serializer_class(
+            queryset, data=request.data, validated_data=self.validated_data
+        )
         if not product_serializer.is_valid():
             return Response(
                 {'message': 'error', 'error': product_serializer.errors},
