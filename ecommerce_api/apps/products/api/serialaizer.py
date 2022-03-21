@@ -25,11 +25,11 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def validate_price(self, value):
         if self.own_validate.is_less_than_zero(value):
-            raise serializers.ValidationError("Price cannot be negative")
+            raise serializers.ValidationError("price cannot be negative")
         return value
 
     def validate_stock(self, value):
         if self.own_validate.is_less_than_zero(value):
-            raise serializers.ValidationError("Stock cannot be negative")
+            raise serializers.ValidationError("stock cannot be negative")
         return value
 
