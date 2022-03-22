@@ -3,11 +3,11 @@ from typing import Optional, Any
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 
-from apps.products.api.serialaizer import ProductSerializer
+from apps.products.api.serializers import ProductSerializer
 from domain.vatidate.validate import Validate
 
 
-class ProductViewSet(viewsets.ModelViewSet):
+class ProductAPIViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     own_validate = Validate()
 
