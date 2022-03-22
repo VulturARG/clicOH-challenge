@@ -9,7 +9,7 @@ from domain.vatidate.validate import Validate
 
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
-    validated_data = Validate()
+    own_validate = Validate()
 
     def get_queryset(self, pk: Optional[int] = None) -> Any:
         if pk is None:
@@ -19,7 +19,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     def create(self, request: Any, *args, **kwargs) -> Response:
         """Create a new product"""
 
-        serializer = self.serializer_class(data=request.data, validated_data=self.validated_data)
+        serializer = self.serializer_class(data=request.data, own_validate=self.own_validate)
         if not serializer.is_valid():
             return Response(
                 {'message': 'error', 'error': serializer.errors},
@@ -39,7 +39,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             )
 
         product_serializer = self.serializer_class(
-            queryset, data=request.data, validated_data=self.validated_data
+            queryset, data=request.data, own_validate=self.own_validate
         )
         if not product_serializer.is_valid():
             return Response(
@@ -61,7 +61,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             )
 
         product_serializer = self.serializer_class(
-            queryset, data=request.data, validated_data=self.validated_data
+            queryset, data=request.data, own_validate=self.own_validate
         )
         if not product_serializer.is_valid():
             return Response(
