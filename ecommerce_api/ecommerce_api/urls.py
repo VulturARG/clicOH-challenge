@@ -51,6 +51,13 @@ urlpatterns = urlpatterns_swagger + [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path(urllib.parse.urljoin(API_VERSION, 'users/'), include('apps.users.api.routers')),
     path(urllib.parse.urljoin(API_VERSION, 'products/'), include('apps.products.api.routers')),
-    path(urllib.parse.urljoin(API_VERSION, 'orders/'), include('apps.orders.api.routers')),
+    path(urllib.parse.urljoin(
+        API_VERSION, 'orders/'),
+        include('apps.orders.api.routers.order_routers')
+    ),
+    path(
+        urllib.parse.urljoin(API_VERSION, 'orders-detail/'),
+        include('apps.orders.api.routers.order_detail_routers')
+    ),
 ]
 

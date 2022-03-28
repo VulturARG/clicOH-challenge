@@ -22,3 +22,24 @@ class OrderDetailSerializer(serializers.ModelSerializer):
         super().__init__(instance=instance, data=data, **kwargs)
         self.own_validate = own_validate
 
+    def to_representation(self, instance):
+        return {
+            'id': instance.id,
+            'order_id': instance.order_id,
+            'product_id': instance.product_id,
+            'quantity': instance.quantity,
+        }
+
+
+class OrderRetrieveDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderDetail
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        return {
+            'id': instance.id,
+            'order_id': instance.order_id,
+            'product_id': instance.product_id,
+            'quantity': instance.quantity,
+        }

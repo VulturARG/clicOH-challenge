@@ -14,12 +14,12 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterField(
             model_name='orderdetail',
-            name='order',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='orders.order'),
+            name='order_id',
+            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='orders.order_id'),
         ),
         migrations.AlterField(
             model_name='orderdetail',
-            name='product',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='products.product'),
+            name='product_id',
+            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='products.product_id'),
         ),
     ]
