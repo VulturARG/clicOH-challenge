@@ -35,21 +35,21 @@ LOCAL_APPS = [
 ]
 
 THIRD_APPS = [
-    # 'corsheaders',
+    'corsheaders',
     # 'automatic_crud',
     'rest_framework',
     # 'rest_framework.authtoken',
-    # 'rest_framework_simplejwt',
-    # 'rest_framework_simplejwt.token_blacklist',
-    # 'drf_yasg',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+    'drf_yasg',
 ]
 
 INSTALLED_APPS = BASE_APPS + LOCAL_APPS + THIRD_APPS
 
-# SWAGGER_SETTINGS = {
-#     'DOC_EXPANSION': 'none'
-# }
-#
+SWAGGER_SETTINGS = {
+    'DOC_EXPANSION': 'none'
+}
+
 # REST_FRAMEWORK = {
 #     'DEFAULT_AUTHENTICATION_CLASSES': [
 #         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -62,7 +62,7 @@ INSTALLED_APPS = BASE_APPS + LOCAL_APPS + THIRD_APPS
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    # 'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
