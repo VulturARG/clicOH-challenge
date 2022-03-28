@@ -17,7 +17,7 @@ class ProductAPIViewSet(viewsets.ModelViewSet):
         return self.get_serializer().Meta.model.objects.filter(id=pk).first()
 
     def create(self, request: Any, *args, **kwargs) -> Response:
-        """Create a new product"""
+        """Create a new product_id"""
 
         serializer = self.serializer_class(data=request.data, own_validate=self.own_validate)
         if not serializer.is_valid():
@@ -26,10 +26,10 @@ class ProductAPIViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
         serializer.save()
-        return Response({'message': 'product created'}, status=status.HTTP_201_CREATED)
+        return Response({'message': 'product_id created'}, status=status.HTTP_201_CREATED)
 
     def update(self, request: Any, pk: Optional[int] = None, *args, **kwargs) -> Response:
-        """Update a product"""
+        """Update a product_id"""
 
         queryset = self.get_queryset(pk)
         if not queryset:
@@ -48,10 +48,10 @@ class ProductAPIViewSet(viewsets.ModelViewSet):
             )
 
         product_serializer.save()
-        return Response({'message': 'updated product'}, status=status.HTTP_200_OK)
+        return Response({'message': 'updated product_id'}, status=status.HTTP_200_OK)
 
     def destroy(self, request: Any, pk: Optional[int] = None, *args, **kwargs) -> Response:
-        """Delete a product"""
+        """Delete a product_id"""
 
         queryset = self.get_queryset(pk)
         if not queryset:
@@ -70,5 +70,5 @@ class ProductAPIViewSet(viewsets.ModelViewSet):
             )
 
         product_serializer.save()
-        return Response({'message': 'deleted product'}, status=status.HTTP_200_OK)
+        return Response({'message': 'deleted product_id'}, status=status.HTTP_200_OK)
 
