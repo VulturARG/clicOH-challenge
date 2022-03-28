@@ -51,6 +51,6 @@ class Logout(GenericAPIView):
     def post(self, request: Request, *args, **kwargs) -> Response:
         user = User.objects.filter(id=request.data.get('user', 0))
         if not user.exists():
-            return Response({'error': 'user does not exist'},status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'user does not exist'}, status=status.HTTP_400_BAD_REQUEST)
         RefreshToken.for_user(user.first())
         return Response({'message': 'successfully closed session'}, status=status.HTTP_200_OK)

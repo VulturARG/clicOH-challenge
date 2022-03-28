@@ -1,6 +1,6 @@
-from typing import Optional, Tuple, Any
+from typing import Optional, Tuple
 
-from rest_framework import status, authentication, exceptions
+from rest_framework import authentication, exceptions
 from rest_framework.authentication import get_authorization_header
 from rest_framework.request import Request
 
@@ -9,7 +9,7 @@ from apps.users.models import User
 
 
 class Authentication(authentication.BaseAuthentication):
-    user = None
+    # user = None
 
     def get_user(self, request: Request) -> Optional[User]:
         token = get_authorization_header(request).split()
@@ -27,12 +27,12 @@ class Authentication(authentication.BaseAuthentication):
         if user is None:
             return None
 
-        self.user = user
+        # self.user = user
         return user
 
     def authenticate(self, request: Request) -> Tuple[User, int]:
-        self.get_user(request)
-        if self.user is None:
-            raise exceptions.AuthenticationFailed('credentials not sent.')
+        user = self.get_user(request)
+        if user is None:
+            raise exceptions.AuthenticationFailed('credentials not sent')
 
-        return self.user, 1
+        return user, 1

@@ -3,14 +3,12 @@ from datetime import timedelta
 from django.utils import timezone
 from django.conf import settings
 
-from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.exceptions import AuthenticationFailed
 
 
 class ExpiringTokenAuthentication(TokenAuthentication):
 
-    def expires_in(self, token):
+    def expires_in(self, token) -> timedelta:
         """Return left time of token."""
 
         time_elapsed = timezone.now() - token.created
