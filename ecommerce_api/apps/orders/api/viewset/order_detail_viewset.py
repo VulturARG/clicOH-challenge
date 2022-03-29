@@ -17,12 +17,12 @@ class OrderDetailListAPIViewSet(viewsets.ModelViewSet):
         return self.get_serializer().Meta.model.objects.filter(id=pk).first()
 
     # def list(self, request: Any, *args, **kwargs) -> Response:
-    #     """List an order_id"""
+    #     """List an order"""
     #
     #     pass
 
     def create(self, request: Any, *args, **kwargs) -> Response:
-        """Create a new order_id detail"""
+        """Create a new order detail"""
 
         serializer = self.serializer_class(data=request.data, own_validate=self.own_validate)
         if not serializer.is_valid():
@@ -31,15 +31,15 @@ class OrderDetailListAPIViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
         # serializer.save()
-        return Response({'message': 'order_id created'}, status=status.HTTP_201_CREATED)
+        return Response({'message': 'order created'}, status=status.HTTP_201_CREATED)
 
     # def update(self, request: Any, pk: Optional[int] = None, *args, **kwargs) -> Response:
-    #     """Update an order_id"""
+    #     """Update an order"""
     #
     #     pass
     #
     # def destroy(self, request: Any, pk: Optional[int] = None, *args, **kwargs) -> Response:
-    #     """Delete an order_id"""
+    #     """Delete an order"""
     #
     #     pass
 

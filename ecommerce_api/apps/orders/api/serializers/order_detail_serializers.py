@@ -25,8 +25,8 @@ class OrderDetailSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         return {
             'id': instance.id,
-            'order_id': instance.order_id,
-            'product_id': instance.product_id,
+            'order': instance.order_id,
+            'product': instance.product_id,
             'quantity': instance.quantity,
         }
 
@@ -39,7 +39,7 @@ class OrderRetrieveDetailSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         return {
             'id': instance.id,
-            'order_id': instance.order_id,
-            'product_id': instance.product_id,
+            'order': instance.order_id,
+            'product': instance.product_id,
             'quantity': instance.quantity,
         }

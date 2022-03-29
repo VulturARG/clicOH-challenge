@@ -47,7 +47,7 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
     def retrieve(self, request: Any, pk: int = None, *args, **kwargs) -> Response:
         order = self.get_queryset(pk)
         if order is None:
-            return Response({'message': 'order_id not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': 'order not found'}, status=status.HTTP_404_NOT_FOUND)
         orders_serializer = OrderRetrieveSerializer(order)
 
         order_repository = DRFOrderRepository(
@@ -59,7 +59,7 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
         return Response(service.get_orders(), status=status.HTTP_200_OK)
 
     def create(self, request: Any, *args, **kwargs) -> Response:
-        """Create a new order_id"""
+        """Create a new order"""
 
         order_serializer = self.serializer_class(data=request.data, own_validate=self.own_validate)
         if not order_serializer.is_valid():
@@ -67,6 +67,9 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
                 {'message': 'error', 'error': order_serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+        # pepe = order_serializer.save()
+        # print(pepe)
 
         order_detail = request.data.get('order_detail')
 
@@ -83,14 +86,14 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # order_serializer.save()
+        #
         od = OrderDetail(order_detail)
         print(od)
         print(updated_products)
 
         return Response(
             {
-                'message': 'order_id created',
+                'message': 'order created',
                 # "products": serializer_class_order_detail.data if order_serializer.data else None
                 "products": order_detail
             },
@@ -98,12 +101,12 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
         )
 
     # def update(self, request: Any, pk: Optional[int] = None, *args, **kwargs) -> Response:
-    #     """Update an order_id"""
+    #     """Update an order"""
     #
     #     pass
     #
     # def destroy(self, request: Any, pk: Optional[int] = None, *args, **kwargs) -> Response:
-    #     """Delete an order_id"""
+    #     """Delete an order"""
     #
     #     pass
 

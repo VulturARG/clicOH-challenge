@@ -17,7 +17,7 @@ class ProductAPIViewSet(viewsets.ModelViewSet):
         return self.get_serializer().Meta.model.objects.filter(id=pk).first()
 
     def create(self, request: Any, *args, **kwargs) -> Response:
-        """Create a new product_id"""
+        """Create a new product"""
 
         serializer = self.serializer_class(data=request.data, own_validate=self.own_validate)
         if not serializer.is_valid():
@@ -26,10 +26,10 @@ class ProductAPIViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
         serializer.save()
-        return Response({'message': 'product_id created'}, status=status.HTTP_201_CREATED)
+        return Response({'message': 'product created'}, status=status.HTTP_201_CREATED)
 
     def update(self, request: Any, pk: Optional[int] = None, *args, **kwargs) -> Response:
-        """Update a product_id"""
+        """Update a product"""
 
         queryset = self.get_queryset(pk)
         if not queryset:

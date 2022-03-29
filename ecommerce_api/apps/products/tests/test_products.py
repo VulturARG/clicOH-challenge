@@ -52,14 +52,14 @@ class ProductsTestCase(APITestCase):
 
         response = self.client.post(path=self.list_url, data=data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data["message"], "product_id created")
+        self.assertEqual(response.data["message"], "product created")
 
     def test_update_product(self):
         response = self.client.put(
             path=self.detail_url, data=self.product_data[0], format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["message"], "updated product_id")
+        self.assertEqual(response.data["message"], "updated product")
 
     def test_update_with_bad_pk(self):
         response = self.client.put(
@@ -73,7 +73,7 @@ class ProductsTestCase(APITestCase):
             path=self.detail_url, data=self.product_data[0], format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["message"], "deleted product_id")
+        self.assertEqual(response.data["message"], "deleted product")
 
     def test_delete_a_non_existing_product(self):
         response = self.client.delete(

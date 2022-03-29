@@ -8,7 +8,7 @@ class OrderException(Exception):
 
 
 class ProductNotUniqueError(OrderException):
-    MESSAGE = "there are more than one product_id type per order_id"
+    MESSAGE = "there are more than one product type per order"
 
     def __init__(self) -> None:
         super().__init__(self.MESSAGE)

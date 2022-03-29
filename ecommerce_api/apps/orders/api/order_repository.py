@@ -39,7 +39,7 @@ class DRFOrderRepository(OrderRepository):
         ]
 
     def get_orders_details(self) -> List[OrderDetailDomain]:
-        """Get all order_id details."""
+        """Get all order details."""
 
         if self._order_details is None:
             return []
@@ -67,7 +67,7 @@ class DRFOrderRepository(OrderRepository):
         }
 
     def _get_orders(self, order: ReturnDict) -> OrderDomain:
-        """Get order_id domain class."""
+        """Get order domain class."""
 
         return OrderDomain(
             id=dict(order)["id"],
@@ -75,17 +75,17 @@ class DRFOrderRepository(OrderRepository):
         )
 
     def get_order_detail_domain(self, order_detail: ReturnDict) -> OrderDetailDomain:
-        """Get order_id detail domain class."""
+        """Get order detail domain class."""
 
         return OrderDetailDomain(
             id=dict(order_detail)["id"],
-            order_id=dict(order_detail)["order_id"],
-            product_id=dict(order_detail)["product_id"],
+            order_id=dict(order_detail)["order"],
+            product_id=dict(order_detail)["product"],
             quantity=dict(order_detail)["quantity"],
         )
 
     def _get_product(self, product: ReturnDict) -> Product:
-        """Get product_id domain class."""
+        """Get product domain class."""
 
         return Product(
             id=dict(product)["id"],

@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Order(models.Model):
-    """Model representing an order_id."""
+    """Model representing an order."""
 
     date_time = models.DateTimeField(auto_now_add=True)
 
@@ -18,7 +18,7 @@ class Order(models.Model):
 
 
 class OrderDetail(models.Model):
-    """Model representing an order_id detail."""
+    """Model representing an order detail."""
 
     order_id = models.ForeignKey(Order, on_delete=models.CASCADE, null=True, blank=True)
     product_id = models.ForeignKey(

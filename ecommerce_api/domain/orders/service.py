@@ -43,7 +43,7 @@ class OrderService:
             self,
             new_products: List[Dict[str, Any]]
     ) -> Dict[str, Any]:
-        """Create a new order_id."""
+        """Create a new order."""
 
         if not new_products:
             return {}

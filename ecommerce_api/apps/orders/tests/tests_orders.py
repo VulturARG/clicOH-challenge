@@ -25,7 +25,8 @@ class OrderTestCase(unittest.TestCase):
             self.product.save()
 
     def test_list_orders(self):
-        pass
+        response = self.client.get(path=self.list_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_list_one_order(self):
         """Consultar una orden y sus detalles"""
