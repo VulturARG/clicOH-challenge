@@ -1,8 +1,7 @@
-import unittest
-
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from apps.orders.models import Order, OrderDetail
 from apps.products.models import Product
 
 
@@ -12,23 +11,61 @@ class OrderTestCase(APITestCase):
     bad_detail_url = "/v1/orders/0/"
 
     def setUp(self):
-        self.product_data = [
+        product_1 = Product(
             {
                 "name": 'Product 1',
                 "description": 'Product 1 description',
                 "price": '100.00',
                 "stock": '10',
-            },
+            }
+        )
+        product_1.save()
+
+        product_2 = Product(
             {
                 "name": 'Product 2',
                 "description": 'Product 2 description',
                 "price": '200.00',
                 "stock": '20',
             }
-        ]
-        for product in self.product_data:
-            self.product = Product(**product)
-            self.product.save()
+        )
+        product_2.save()
+
+        order_1 = Order(
+            {
+                "id": 1,
+                "date_time": "2020-01-01T00:00:00Z",
+            }
+        )
+        order_1.save()
+
+        order_2 = Order(
+            {
+                "id": 2,
+                "date_time": "2022-01-01T00:00:00Z",
+            }
+        )
+        order_2.save()
+
+        order_detail_1 = OrderDetail(
+            {
+                "id": 1,
+                "product_id": product_1,
+                "quantity": 1,
+                "order_id": order_1,
+            }
+        )
+        order_detail_1.save()
+
+        order_detail_2 = OrderDetail(
+            {
+                "id": 2,
+                "product_id": product_2,
+                "quantity": 2,
+                "order_id": order_1,
+            }
+        )
+        order_detail_2.save()
 
     def test_list_orders(self):
         response = self.client.get(path=self.list_url)
@@ -36,48 +73,46 @@ class OrderTestCase(APITestCase):
 
     def test_list_one_order(self):
         """Consultar una orden y sus detalles"""
-        pass
+        response = self.client.get(path=self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_create_order(self):
-        """
-        Registrar/Editar una orden (inclusive sus detalles).
+    # def test_create_order(self):
+    #     """
+    #     Registrar/Editar una orden (inclusive sus detalles).
+    #
+    #     Debe actualizar el stock del producto
+    #
+    #     Al crear o editar una orden validar q haya suficiente stock del producto, en caso no contar
+    #     con stock se debe retornar un error de validación
+    #
+    #     Validar que no se repitan productos en el mismo pedido
+    #     """
+    #     self.assertTrue(False)
+    #
+    # def test_update_order(self):
+    #     """
+    #     Registrar/Editar una orden (inclusive sus detalles).
+    #
+    #     Debe actualizar el stock del producto
+    #
+    #     Al crear o editar una orden validar q haya suficiente stock del producto, en caso no contar
+    #     con stock se debe retornar un error de validación
+    #     """
+    #     self.assertTrue(False)
+    #
+    # def test_update_order_with_bad_pk(self):
+    #     self.assertTrue(False)
+    #
+    # def test_delete_order(self):
+    #     """Eliminar una orden. Restaura stock del producto"""
+    #     self.assertTrue(False)
+    #
+    # def test_delete_order_with_bad_pk(self):
+    #     self.assertTrue(False)
+    #
+    # def test_get_total(self):
+    #     self.assertTrue(False)
+    #
+    # def test_get_total_usd(self):
+    #     self.assertTrue(False)
 
-        Debe actualizar el stock del producto
-
-        Al crear o editar una orden validar q haya suficiente stock del producto, en caso no contar
-        con stock se debe retornar un error de validación
-
-        Validar que no se repitan productos en el mismo pedido
-        """
-        pass
-
-    def test_update_order(self):
-        """
-        Registrar/Editar una orden (inclusive sus detalles).
-
-        Debe actualizar el stock del producto
-
-        Al crear o editar una orden validar q haya suficiente stock del producto, en caso no contar
-        con stock se debe retornar un error de validación
-        """
-        pass
-
-    def test_update_order_with_bad_pk(self):
-        pass
-
-    def test_delete_order(self):
-        """Eliminar una orden. Restaura stock del producto"""
-        pass
-
-    def test_delete_order_with_bad_pk(self):
-        pass
-
-    def test_get_total(self):
-        pass
-
-    def test_get_total_usd(self):
-        pass
-
-
-if __name__ == '__main__':
-    unittest.main()
