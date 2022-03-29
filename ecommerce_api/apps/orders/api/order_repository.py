@@ -79,8 +79,8 @@ class DRFOrderRepository(OrderRepository):
 
         return OrderDetailDomain(
             id=dict(order_detail)["id"],
-            order_id=dict(order_detail)["order"],
-            product_id=dict(order_detail)["product"],
+            order_id=dict(order_detail)["order"].id,
+            product_id=dict(order_detail)["product"].id,
             quantity=dict(order_detail)["quantity"],
         )
 

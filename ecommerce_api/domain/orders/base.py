@@ -21,8 +21,8 @@ class OrderDetail:
 
     def __iter__(self):
         yield 'id', self.id
-        yield 'order', self.order_id
-        yield 'product', self.product_id
+        yield 'order_id', self.order_id
+        yield 'product_id', self.product_id
         yield 'quantity', self.quantity
 
 

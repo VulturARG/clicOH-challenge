@@ -20,8 +20,8 @@ class Order(models.Model):
 class OrderDetail(models.Model):
     """Model representing an order detail."""
 
-    order_id = models.ForeignKey(Order, on_delete=models.CASCADE, null=True, blank=True)
-    product_id = models.ForeignKey(
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True, blank=True)
+    product = models.ForeignKey(
         'products.Product', on_delete=models.CASCADE, null=True, blank=False
     )
     quantity = models.IntegerField(default=0)
