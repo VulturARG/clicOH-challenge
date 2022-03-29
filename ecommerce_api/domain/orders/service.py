@@ -1,8 +1,12 @@
 from typing import List, Dict, Any
 
 from domain.orders.base import OrderDetail
-from domain.orders.exceptions import ProductNotUniqueError, NotEnoughStockError, \
-    QuantityEqualOrLessThanZeroError
+from domain.orders.exceptions import (
+    ProductNotUniqueError,
+    NotEnoughStockError,
+    QuantityEqualOrLessThanZeroError,
+    ThereAreNoProductsError
+)
 from domain.orders.repository import OrderRepository
 
 
@@ -48,11 +52,13 @@ class OrderService:
             raise ProductNotUniqueError()
 
         products = self._repository.get_products()
+        if len(products) == 0:
+            raise ThereAreNoProductsError()
 
         updated_products = {}
         for product in new_products:
             product_id = product['product_id']
-            product_class = list(products[product_id - 1].values())[0]
+            product_class = products[product_id]
 
             old_stock = product_class.stock
             new_stock = old_stock - product['quantity']

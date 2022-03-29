@@ -3,42 +3,38 @@ from datetime import datetime
 from unittest.mock import Mock
 
 from domain.orders.base import Order, Product, OrderDetail
-from domain.orders.exceptions import ProductNotUniqueError, NotEnoughStockError
+from domain.orders.exceptions import (
+    ProductNotUniqueError, NotEnoughStockError, ThereAreNoProductsError
+)
 from domain.orders.repository import OrderRepository
 from domain.orders.service import OrderService
 
 
 class ServiceTestCase(unittest.TestCase):
     def setUp(self):
-        self.products = [
-            {
-                "1": Product(
-                    id=1,
-                    name="Product 1",
-                    description="Product 1 description",
-                    price=10.0,
-                    stock=10
-                )
-            },
-            {
-                "2": Product(
-                    id=2,
-                    name="Product 2",
-                    description="Product 2 description",
-                    price=20.0,
-                    stock=20
-                )
-            },
-            {
-                "3": Product(
-                    id=3,
-                    name="Product 3",
-                    description="Product 3 description",
-                    price=10.0,
-                    stock=10
-                )
-            },
-        ]
+        self.products = {
+            1: Product(
+                id=1,
+                name="Product 1",
+                description="Product 1 description",
+                price=10.0,
+                stock=10
+            ),
+            2: Product(
+                id=2,
+                name="Product 2",
+                description="Product 2 description",
+                price=20.0,
+                stock=20
+            ),
+            3: Product(
+                id=3,
+                name="Product 3",
+                description="Product 3 description",
+                price=10.0,
+                stock=10
+            )
+        }
 
         self.order_details = [
             OrderDetail(
@@ -185,7 +181,7 @@ class ServiceTestCase(unittest.TestCase):
         actual = service.add_products_to_order([])
         self.assertEqual({}, actual)
 
-    def test_create_an_order_with_Not_enough_stock(self):
+    def test_create_an_order_with_not_enough_stock(self):
         mock_repository = Mock(spec=OrderRepository)
         service = OrderService(mock_repository)
 
@@ -206,6 +202,16 @@ class ServiceTestCase(unittest.TestCase):
 
         with self.assertRaises(ProductNotUniqueError):
             service.add_products_to_order(self.new_products_are_equal)
+
+    def test_create_an_order_with_not_product(self):
+        mock_repository = Mock(spec=OrderRepository)
+        service = OrderService(mock_repository)
+
+        # values returned by the repository
+        mock_repository.get_products.return_value = {}
+
+        with self.assertRaises(ThereAreNoProductsError):
+            service.add_products_to_order(self.new_products)
 
     def test_create_an_order(self):
         mock_repository = Mock(spec=OrderRepository)

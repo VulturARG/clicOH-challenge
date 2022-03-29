@@ -24,14 +24,6 @@ class OrderSerializer(serializers.ModelSerializer):
         super().__init__(instance=instance, data=data, **kwargs)
         self.own_validate = own_validate
 
-    # def to_representation(self, instance):
-    #     pass
-        # print(instance)
-        # return {
-        #     # 'id': instance.id,
-        #     'date_time': instance.date_time,
-        # }
-
 
 class OrderRetrieveSerializer(serializers.ModelSerializer):
 

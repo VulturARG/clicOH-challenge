@@ -16,12 +16,11 @@ class OrderDetailListAPIViewSet(viewsets.ModelViewSet):
             return self.get_serializer().Meta.model.objects.all()
         return self.get_serializer().Meta.model.objects.filter(id=pk).first()
 
-
     # def list(self, request: Any, *args, **kwargs) -> Response:
     #     """List an order_id"""
     #
     #     pass
-    #
+
     def create(self, request: Any, *args, **kwargs) -> Response:
         """Create a new order_id detail"""
 

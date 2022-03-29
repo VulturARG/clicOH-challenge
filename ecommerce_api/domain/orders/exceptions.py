@@ -26,3 +26,11 @@ class QuantityEqualOrLessThanZeroError(OrderException):
 
     def __init__(self) -> None:
         super().__init__(self.MESSAGE)
+
+
+class ThereAreNoProductsError(OrderException):
+    MESSAGE = "there are no products"
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE)
+

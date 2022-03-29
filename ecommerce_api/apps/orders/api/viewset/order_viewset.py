@@ -7,11 +7,14 @@ from rest_framework.response import Response
 from rest_framework.serializers import ListSerializer
 
 from apps.orders.api.order_repository import DRFOrderRepository
-from apps.orders.api.serializers.order_detail_serializers import OrderDetailSerializer, \
+from apps.orders.api.serializers.order_detail_serializers import (
+    OrderDetailSerializer,
     OrderRetrieveDetailSerializer
+)
 from apps.orders.api.serializers.order_serializers import OrderSerializer, OrderRetrieveSerializer
-from apps.orders.api.viewset.order_detail_viewset import OrderDetailListAPIViewSet
 from apps.orders.models import OrderDetail
+from apps.products.api.serializers import ProductListSerializer
+from apps.products.models import Product
 from domain.orders.exceptions import OrderException
 from domain.orders.service import OrderService
 from domain.vatidate.validate import Validate
@@ -44,14 +47,13 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
     def retrieve(self, request: Any, pk: int = None, *args, **kwargs) -> Response:
         order = self.get_queryset(pk)
         if order is None:
-            return Response(
-                {'message': 'order_id not found'},
-                status=status.HTTP_404_NOT_FOUND
-            )
+            return Response({'message': 'order_id not found'}, status=status.HTTP_404_NOT_FOUND)
         orders_serializer = OrderRetrieveSerializer(order)
-        order_details_serializer_data = self._order_details_serializer_data(pk=pk)
 
-        order_repository = DRFOrderRepository(orders_serializer.data, order_details_serializer_data)
+        order_repository = DRFOrderRepository(
+            orders=orders_serializer.data,
+            order_details= self._order_details_serializer_data(pk=pk),
+        )
         service = OrderService(order_repository)
 
         return Response(service.get_orders(), status=status.HTTP_200_OK)
@@ -68,7 +70,10 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
 
         order_detail = request.data.get('order_detail')
 
-        order_repository = DRFOrderRepository(order_serializer.data)
+        order_repository = DRFOrderRepository(
+            orders=order_serializer.data,
+            products=self._order_details_products(),
+        )
         service = OrderService(order_repository)
         try:
             updated_products = service.add_products_to_order(order_detail)
@@ -81,6 +86,8 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
         # order_serializer.save()
         od = OrderDetail(order_detail)
         print(od)
+        print(updated_products)
+
         return Response(
             {
                 'message': 'order_id created',
@@ -113,7 +120,7 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
             return OrderDetail.objects.all()
         return OrderDetail.objects.filter(order=pk).first()
 
-    def _order_details_serializer_data(self, pk: Optional[int]) -> Optional[ListSerializer]:
+    def _order_details_serializer_data(self, pk: Optional[int] = None) -> Optional[ListSerializer]:
         order_details = self._get_queryset_order_detail(pk)
 
         if order_details is None:
@@ -121,6 +128,20 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
 
         order_details_serializer = OrderRetrieveDetailSerializer(order_details)
         return order_details_serializer.data
+
+    def _get_queryset_products(self, pk: Optional[int] = None) -> Any:
+        if pk is None:
+            return Product.objects.all()
+        return Product.objects.filter(order=pk).first()
+
+    def _order_details_products(self, pk: Optional[int] = None) -> Optional[ListSerializer]:
+        products = self._get_queryset_products(pk)
+
+        if products is None:
+            return None
+
+        products_serializer = ProductListSerializer(products, many=True)
+        return products_serializer.data
 
 
 
