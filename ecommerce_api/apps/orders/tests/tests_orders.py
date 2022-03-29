@@ -12,7 +12,7 @@ class OrderTestCase(APITestCase):
 
     def setUp(self):
         product_1 = Product(
-            {
+            **{
                 "name": 'Product 1',
                 "description": 'Product 1 description',
                 "price": '100.00',
@@ -22,7 +22,7 @@ class OrderTestCase(APITestCase):
         product_1.save()
 
         product_2 = Product(
-            {
+            **{
                 "name": 'Product 2',
                 "description": 'Product 2 description',
                 "price": '200.00',
@@ -32,7 +32,7 @@ class OrderTestCase(APITestCase):
         product_2.save()
 
         order_1 = Order(
-            {
+            **{
                 "id": 1,
                 "date_time": "2020-01-01T00:00:00Z",
             }
@@ -40,7 +40,7 @@ class OrderTestCase(APITestCase):
         order_1.save()
 
         order_2 = Order(
-            {
+            **{
                 "id": 2,
                 "date_time": "2022-01-01T00:00:00Z",
             }
@@ -48,33 +48,37 @@ class OrderTestCase(APITestCase):
         order_2.save()
 
         order_detail_1 = OrderDetail(
-            {
+            **{
                 "id": 1,
-                "product_id": product_1,
+                "product": product_1,
                 "quantity": 1,
-                "order_id": order_1,
+                "order": order_1,
             }
         )
         order_detail_1.save()
 
         order_detail_2 = OrderDetail(
-            {
+            **{
                 "id": 2,
-                "product_id": product_2,
+                "product": product_2,
                 "quantity": 2,
-                "order_id": order_1,
+                "order": order_1,
             }
         )
         order_detail_2.save()
 
     def test_list_orders(self):
         response = self.client.get(path=self.list_url)
+        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response.data[0]['order_detail']), 2)
 
     def test_list_one_order(self):
-        """Consultar una orden y sus detalles"""
         response = self.client.get(path=self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print("one", response.data)
+        self.assertEqual(len(response.data[0]['order_detail']), 2)
 
     # def test_create_order(self):
     #     """
