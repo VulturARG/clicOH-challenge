@@ -51,6 +51,21 @@ class ServiceTestCase(unittest.TestCase):
             ),
         ]
 
+        self.order_details_create = [
+            OrderDetail(
+                id=None,
+                order_id=None,
+                product_id=1,
+                quantity=1,
+            ),
+            OrderDetail(
+                id=None,
+                order_id=None,
+                product_id=2,
+                quantity=2,
+            ),
+        ]
+
         self.orders = [
             Order(
                 id=1,
@@ -76,13 +91,13 @@ class ServiceTestCase(unittest.TestCase):
         self.new_products_are_equal = [
             {
                 "id": None,
-                "order_id": 1,
+                "order_id": None,
                 "product_id": 1,
                 "quantity": 1,
             },
             {
                 "id": None,
-                "order_id": 1,
+                "order_id": None,
                 "product_id": 1,
                 "quantity": 2,
             },
@@ -219,7 +234,7 @@ class ServiceTestCase(unittest.TestCase):
 
         # values returned by the repository
         mock_repository.get_orders.return_value = self.orders
-        mock_repository.get_orders_details.return_value = self.order_details
+        mock_repository.get_orders_details.return_value = self.order_details_create
         mock_repository.get_products.return_value = self.products
 
         actual = service.get_new_stock_of_the_products(self.new_products)

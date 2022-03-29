@@ -14,10 +14,10 @@ class Product:
 
 @dataclass(frozen=True, eq=True)
 class OrderDetail:
-    order_id: int
     product_id: int
     quantity: int
     id: Optional[int] = None
+    order_id: Optional[int] = None
 
     def __iter__(self):
         yield 'id', self.id
