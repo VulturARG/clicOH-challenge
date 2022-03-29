@@ -1,9 +1,15 @@
 import unittest
 
+from rest_framework import status
+from rest_framework.test import APITestCase
+
 from apps.products.models import Product
 
 
-class OrderTestCase(unittest.TestCase):
+class OrderTestCase(APITestCase):
+    list_url = "/v1/orders/"
+    detail_url = "/v1/orders/1/"
+    bad_detail_url = "/v1/orders/0/"
 
     def setUp(self):
         self.product_data = [

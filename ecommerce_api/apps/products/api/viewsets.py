@@ -48,10 +48,10 @@ class ProductAPIViewSet(viewsets.ModelViewSet):
             )
 
         product_serializer.save()
-        return Response({'message': 'updated product_id'}, status=status.HTTP_200_OK)
+        return Response({'message': 'updated product'}, status=status.HTTP_200_OK)
 
     def destroy(self, request: Any, pk: Optional[int] = None, *args, **kwargs) -> Response:
-        """Delete a product_id"""
+        """Delete a product"""
 
         queryset = self.get_queryset(pk)
         if not queryset:
@@ -70,5 +70,5 @@ class ProductAPIViewSet(viewsets.ModelViewSet):
             )
 
         product_serializer.save()
-        return Response({'message': 'deleted product_id'}, status=status.HTTP_200_OK)
+        return Response({'message': 'deleted product'}, status=status.HTTP_200_OK)
 
