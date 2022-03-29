@@ -76,7 +76,7 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
         )
         service = OrderService(order_repository)
         try:
-            updated_products = service.add_products_to_order(order_detail)
+            updated_products = service.get_new_stock_of_the_products(order_detail)
         except OrderException as error:
             return Response(
                 {'message': 'error', 'error': error.MESSAGE},

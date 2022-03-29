@@ -178,7 +178,7 @@ class ServiceTestCase(unittest.TestCase):
         mock_repository.get_orders_details.return_value = self.order_details
         mock_repository.get_products.return_value = self.products
 
-        actual = service.add_products_to_order([])
+        actual = service.get_new_stock_of_the_products([])
         self.assertEqual({}, actual)
 
     def test_create_an_order_with_not_enough_stock(self):
@@ -191,7 +191,7 @@ class ServiceTestCase(unittest.TestCase):
         self.new_products[0]['quantity'] = 11
 
         with self.assertRaises(NotEnoughStockError):
-            service.add_products_to_order(self.new_products)
+            service.get_new_stock_of_the_products(self.new_products)
 
     def test_create_an_order_with_products_not_unique(self):
         mock_repository = Mock(spec=OrderRepository)
@@ -201,7 +201,7 @@ class ServiceTestCase(unittest.TestCase):
         mock_repository.get_products.return_value = self.products
 
         with self.assertRaises(ProductNotUniqueError):
-            service.add_products_to_order(self.new_products_are_equal)
+            service.get_new_stock_of_the_products(self.new_products_are_equal)
 
     def test_create_an_order_with_not_product(self):
         mock_repository = Mock(spec=OrderRepository)
@@ -211,7 +211,7 @@ class ServiceTestCase(unittest.TestCase):
         mock_repository.get_products.return_value = {}
 
         with self.assertRaises(ThereAreNoProductsError):
-            service.add_products_to_order(self.new_products)
+            service.get_new_stock_of_the_products(self.new_products)
 
     def test_create_an_order(self):
         mock_repository = Mock(spec=OrderRepository)
@@ -222,7 +222,7 @@ class ServiceTestCase(unittest.TestCase):
         mock_repository.get_orders_details.return_value = self.order_details
         mock_repository.get_products.return_value = self.products
 
-        actual = service.add_products_to_order(self.new_products)
+        actual = service.get_new_stock_of_the_products(self.new_products)
         self.assertEqual(self.product_indexed, actual)
 
 

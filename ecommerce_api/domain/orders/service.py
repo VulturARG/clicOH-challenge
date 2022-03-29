@@ -39,7 +39,7 @@ class OrderService:
 
         return orders
 
-    def add_products_to_order(
+    def get_new_stock_of_the_products(
             self,
             new_products: List[Dict[str, Any]]
     ) -> Dict[str, Any]:
