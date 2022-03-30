@@ -121,7 +121,7 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
     def _get_queryset_order_detail(self, pk: Optional[int] = None) -> Any:
         if pk is None:
             return OrderDetail.objects.all()
-        return OrderDetail.objects.filter(order=pk).first()
+        return OrderDetail.objects.filter(order=pk)
 
     def _order_details_serializer_data(self, pk: Optional[int] = None) -> Optional[ListSerializer]:
         order_details = self._get_queryset_order_detail(pk)
@@ -129,7 +129,7 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
         if order_details is None:
             return None
 
-        order_details_serializer = OrderRetrieveDetailSerializer(order_details)
+        order_details_serializer = OrderRetrieveDetailSerializer(order_details, many=True)
         return order_details_serializer.data
 
     def _get_queryset_products(self, pk: Optional[int] = None) -> Any:

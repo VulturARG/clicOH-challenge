@@ -67,15 +67,26 @@ class OrderTestCase(APITestCase):
         )
         order_detail_2.save()
 
-    def test_list_orders(self):
-        response = self.client.get(path=self.list_url)
-        print(response.data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
-        self.assertEqual(len(response.data[0]['order_detail']), 2)
+        order_detail_3 = OrderDetail(
+            **{
+                "id": 3,
+                "product": product_1,
+                "quantity": 3,
+                "order": order_2,
+            }
+        )
+        order_detail_3.save()
+
+    # def test_list_orders(self):
+    #     response = self.client.get(path=self.list_url)
+    #     print(response.data)
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     self.assertEqual(len(response.data), 2)
+    #     self.assertEqual(len(response.data[0]['order_detail']), 2)
 
     def test_list_one_order(self):
         response = self.client.get(path=self.detail_url)
+        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         print("one", response.data)
         self.assertEqual(len(response.data[0]['order_detail']), 2)
