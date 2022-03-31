@@ -30,7 +30,7 @@ class DRFOrderRepository(OrderRepository):
     def get_orders(self) -> List[OrderDomain]:
         """Get all orders."""
 
-        if isinstance(self._order_details, ReturnDict):
+        if isinstance(self._orders, ReturnDict):
             return [self._get_orders(self._orders)]
 
         return [
@@ -79,8 +79,8 @@ class DRFOrderRepository(OrderRepository):
 
         return OrderDetailDomain(
             id=dict(order_detail)["id"],
-            order_id=dict(order_detail)["order"].id,
-            product_id=dict(order_detail)["product"].id,
+            order_id=dict(order_detail)["order"],
+            product_id=dict(order_detail)["product"],
             quantity=dict(order_detail)["quantity"],
         )
 
