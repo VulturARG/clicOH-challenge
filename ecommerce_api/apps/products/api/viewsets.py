@@ -60,15 +60,8 @@ class ProductAPIViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        product_serializer = self.serializer_class(
-            queryset, data=request.data, own_validate=self.own_validate
-        )
-        if not product_serializer.is_valid():
-            return Response(
-                {'message': 'error', 'error': product_serializer.errors},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        product_instance = self.get_object()
+        self.perform_destroy(product_instance)
 
-        product_serializer.save()
         return Response({'message': 'deleted product'}, status=status.HTTP_200_OK)
 

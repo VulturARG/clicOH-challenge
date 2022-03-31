@@ -26,8 +26,8 @@ class ProductsTestCase(APITestCase):
             }
         ]
         for product in self.product_data:
-            self.product = Product(**product)
-            self.product.save()
+            product_instance = Product(**product)
+            product_instance.save()
 
     def test_product_list(self):
         response = self.client.get(path=self.list_url)
@@ -69,11 +69,18 @@ class ProductsTestCase(APITestCase):
         self.assertEqual(response.data["error"], "bad index")
 
     def test_delete_an_existing_product(self):
+        response = self.client.get(path=self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["name"], "Product 1")
+
         response = self.client.delete(
             path=self.detail_url, data=self.product_data[0], format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["message"], "deleted product")
+
+        response = self.client.get(path=self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_a_non_existing_product(self):
         response = self.client.delete(
