@@ -1,6 +1,6 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
-from domain.orders.base import OrderDetail
+from domain.orders.base import OrderDetail, Order
 from domain.orders.exceptions import (
     ProductNotUniqueError,
     NotEnoughStockError,
@@ -23,12 +23,8 @@ class OrderService:
     def get_orders(self) -> List[Dict]:
         """Return all orders."""
         orders = []
-        orders_details = self._repository.get_orders_details()
         for order in self._repository.get_orders():
-            order_detail = [
-                detail for detail in orders_details
-                if detail.order_id == order.id
-            ]
+            order_detail = self.get_order_details(order)
             orders.append(
                 {
                     "id": order.id,
@@ -36,14 +32,23 @@ class OrderService:
                     "order_detail": self._order_detail_to_dict(order_detail)
                 }
             )
-
         return orders
+
+    def get_order_details(self, order: Order) -> List[OrderDetail]:
+        orders_details = self._repository.get_orders_details()
+        return [
+            detail for detail in orders_details
+            if detail.order_id == order.id
+        ]
 
     def get_new_stock_of_the_products(
             self,
-            new_products: List[Dict[str, Any]]
+            new_products: List[Dict[str, Any]],
+            delete: Optional[bool] = False
     ) -> Dict[str, Any]:
         """Create a new order."""
+
+        factor = -1 if delete else 1
 
         if not new_products:
             return {}
@@ -61,7 +66,7 @@ class OrderService:
             product_class = products[product_id]
 
             old_stock = product_class.stock
-            new_stock = old_stock - product['quantity']
+            new_stock = old_stock - product['quantity'] * factor
             if new_stock < 0:
                 raise NotEnoughStockError()
 

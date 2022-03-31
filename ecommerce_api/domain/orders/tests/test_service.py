@@ -136,6 +136,23 @@ class ServiceTestCase(unittest.TestCase):
                 }
             }
 
+        self.product_deleted = {
+            "1": {
+                "id": 1,
+                "name": "Product 1",
+                "description": "Product 1 description",
+                "price": 10.0,
+                "stock": 11
+            },
+            "2": {
+                "id": 2,
+                "name": "Product 2",
+                "description": "Product 2 description",
+                "price": 20.0,
+                "stock": 22
+            }
+        }
+
     def test_get_order_list(self):
 
         mock_repository = Mock(spec=OrderRepository)
@@ -184,7 +201,7 @@ class ServiceTestCase(unittest.TestCase):
         actual = service.are_products_unique(self.new_products_are_equal)
         self.assertFalse(actual)
 
-    def test_create_an_order_with_not_products(self):
+    def test_get_new_stock_of_the_products_with_not_products(self):
         mock_repository = Mock(spec=OrderRepository)
         service = OrderService(mock_repository)
 
@@ -196,7 +213,7 @@ class ServiceTestCase(unittest.TestCase):
         actual = service.get_new_stock_of_the_products([])
         self.assertEqual({}, actual)
 
-    def test_create_an_order_with_not_enough_stock(self):
+    def test_get_new_stock_of_the_products_with_not_enough_stock(self):
         mock_repository = Mock(spec=OrderRepository)
         service = OrderService(mock_repository)
 
@@ -208,7 +225,7 @@ class ServiceTestCase(unittest.TestCase):
         with self.assertRaises(NotEnoughStockError):
             service.get_new_stock_of_the_products(self.new_products)
 
-    def test_create_an_order_with_products_not_unique(self):
+    def test_get_new_stock_of_the_products_with_products_not_unique(self):
         mock_repository = Mock(spec=OrderRepository)
         service = OrderService(mock_repository)
 
@@ -218,7 +235,7 @@ class ServiceTestCase(unittest.TestCase):
         with self.assertRaises(ProductNotUniqueError):
             service.get_new_stock_of_the_products(self.new_products_are_equal)
 
-    def test_create_an_order_with_not_product(self):
+    def test_get_new_stock_of_the_products_with_not_product(self):
         mock_repository = Mock(spec=OrderRepository)
         service = OrderService(mock_repository)
 
@@ -228,7 +245,7 @@ class ServiceTestCase(unittest.TestCase):
         with self.assertRaises(ThereAreNoProductsError):
             service.get_new_stock_of_the_products(self.new_products)
 
-    def test_create_an_order(self):
+    def test_get_new_stock_of_the_products(self):
         mock_repository = Mock(spec=OrderRepository)
         service = OrderService(mock_repository)
 
@@ -239,6 +256,18 @@ class ServiceTestCase(unittest.TestCase):
 
         actual = service.get_new_stock_of_the_products(self.new_products)
         self.assertEqual(self.product_indexed, actual)
+
+    def test_get_new_stock_of_the_products_delete_true(self):
+        mock_repository = Mock(spec=OrderRepository)
+        service = OrderService(mock_repository)
+
+        # values returned by the repository
+        mock_repository.get_orders.return_value = self.orders
+        mock_repository.get_orders_details.return_value = self.order_details_create
+        mock_repository.get_products.return_value = self.products
+
+        actual = service.get_new_stock_of_the_products(self.new_products, True)
+        self.assertEqual(self.product_deleted, actual)
 
 
 
