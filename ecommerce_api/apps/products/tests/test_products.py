@@ -1,7 +1,6 @@
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from apps.products.api.viewsets import ProductAPIViewSet
 from apps.products.models import Product
 
 
