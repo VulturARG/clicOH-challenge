@@ -77,54 +77,64 @@ class OrderTestCase(APITestCase):
         )
         order_detail_3.save()
 
-    # def test_list_orders(self):
-    #     response = self.client.get(path=self.list_url)
-    #     print(response.data)
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(len(response.data), 2)
-    #     self.assertEqual(len(response.data[0]['order_detail']), 2)
+    def test_list_orders(self):
+        response = self.client.get(path=self.list_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response.data[0]['order_detail']), 2)
+        self.assertEqual(len(response.data[1]['order_detail']), 1)
+        self.assertEqual(response.data[0]['order_detail'][0]['product_id'], 1)
 
     def test_list_one_order(self):
         response = self.client.get(path=self.detail_url)
-        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        print("one", response.data)
         self.assertEqual(len(response.data[0]['order_detail']), 2)
+        self.assertEqual(len(response.data[0]['order_detail']), 2)
+        self.assertEqual(response.data[0]['order_detail'][0]['product_id'], 1)
 
-    # def test_create_order(self):
-    #     """
-    #     Registrar/Editar una orden (inclusive sus detalles).
-    #
-    #     Debe actualizar el stock del producto
-    #
-    #     Al crear o editar una orden validar q haya suficiente stock del producto, en caso no contar
-    #     con stock se debe retornar un error de validación
-    #
-    #     Validar que no se repitan productos en el mismo pedido
-    #     """
-    #     self.assertTrue(False)
-    #
+    def test_create_order(self):
+        order_detail = {
+            "order_detail": [
+                {"product_id": 1, "quantity": 1},
+                {"product_id": 2, "quantity": 1}
+            ]
+        }
+        response = self.client.post(path=self.list_url, data=order_detail, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual({'message': 'order created'}, response.data)
+
     # def test_update_order(self):
-    #     """
-    #     Registrar/Editar una orden (inclusive sus detalles).
-    #
-    #     Debe actualizar el stock del producto
-    #
-    #     Al crear o editar una orden validar q haya suficiente stock del producto, en caso no contar
-    #     con stock se debe retornar un error de validación
-    #     """
+    #     order_detail = {
+    #         "order_detail": [
+    #             {"product_id": 1, "quantity": 3},
+    #             {"product_id": 2, "quantity": 1}
+    #         ]
+    #     }
+    #     response = self.client.put(path=self.detail_url, data=order_detail, format="json")
+    #     print(response.data)
     #     self.assertTrue(False)
-    #
-    # def test_update_order_with_bad_pk(self):
-    #     self.assertTrue(False)
-    #
-    # def test_delete_order(self):
-    #     """Eliminar una orden. Restaura stock del producto"""
-    #     self.assertTrue(False)
-    #
-    # def test_delete_order_with_bad_pk(self):
-    #     self.assertTrue(False)
-    #
+
+    def test_update_order_with_bad_pk(self):
+        response = self.client.put(path=self.detail_url, data={}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_order(self):
+        """Eliminar una orden. Restaura stock del producto"""
+        response = self.client.get(path=self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.client.delete(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual({'message': 'order deleted'}, response.data)
+
+        response = self.client.get(path=self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual({'message': 'order not found'}, response.data)
+
+    def test_delete_order_with_bad_pk(self):
+        response = self.client.delete(self.bad_detail_url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
     # def test_get_total(self):
     #     self.assertTrue(False)
     #
