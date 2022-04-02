@@ -34,3 +34,10 @@ class ThereAreNoProductsError(OrderException):
     def __init__(self) -> None:
         super().__init__(self.MESSAGE)
 
+
+class DollarBluePriceNotFoundError(OrderException):
+    MESSAGE = "dollar blue price not found"
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE)
+

@@ -9,13 +9,15 @@ class OrderTestCase(APITestCase):
     list_url = "/v1/orders/"
     detail_url = "/v1/orders/1/"
     bad_detail_url = "/v1/orders/0/"
+    get_total_url = "/v1/orders/1/get_total/"
+    get_total_usd_url = "/v1/orders/1/get_total_usd/"
 
     def setUp(self):
         product_1 = Product(
             **{
                 "name": 'Product 1',
                 "description": 'Product 1 description',
-                "price": '100.00',
+                "price": '10.00',
                 "stock": '10',
             }
         )
@@ -25,7 +27,7 @@ class OrderTestCase(APITestCase):
             **{
                 "name": 'Product 2',
                 "description": 'Product 2 description',
-                "price": '200.00',
+                "price": '20.00',
                 "stock": '20',
             }
         )
@@ -103,19 +105,20 @@ class OrderTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual({'message': 'order created'}, response.data)
 
-    # def test_update_order(self):
+    # def test_update_order_two_updates(self):
     #     order_detail = {
     #         "order_detail": [
     #             {"product_id": 1, "quantity": 3},
-    #             {"product_id": 2, "quantity": 1}
+    #             {"product_id": 2, "quantity": 4}
     #         ]
     #     }
     #     response = self.client.put(path=self.detail_url, data=order_detail, format="json")
+    #     self.assertEqual({'message': 'order updated'}, response.data)
+    #     response = self.client.get(path="/v1/products/1/")
     #     print(response.data)
-    #     self.assertTrue(False)
 
     def test_update_order_with_bad_pk(self):
-        response = self.client.put(path=self.detail_url, data={}, format="json")
+        response = self.client.put(path=self.bad_detail_url, data={}, format="json")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_order(self):
@@ -135,9 +138,13 @@ class OrderTestCase(APITestCase):
         response = self.client.delete(self.bad_detail_url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    # def test_get_total(self):
-    #     self.assertTrue(False)
-    #
-    # def test_get_total_usd(self):
-    #     self.assertTrue(False)
+    def test_get_total(self):
+        response = self.client.get(self.get_total_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual({'message': 50.0}, response.data)
+
+    def test_get_total_usd(self):
+        response = self.client.get(self.get_total_usd_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual({'message': 9950.0}, response.data)
 

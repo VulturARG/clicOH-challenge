@@ -18,7 +18,7 @@ class DRFOrderRepository(OrderRepository):
 
     def __init__(
         self,
-        orders: ListSerializer | ReturnDict,
+        orders: Optional[ListSerializer | ReturnDict] = None,
         order_details: Optional[ListSerializer | ReturnDict] = None,
         products: Optional[ListSerializer | ReturnDict] = None,
     ) -> None:
@@ -27,7 +27,7 @@ class DRFOrderRepository(OrderRepository):
         self._order_details = order_details
         self._products = products
 
-    def get_orders(self) -> List[OrderDomain]:
+    def get_orders(self, pk: Optional[int] = None) -> List[OrderDomain]:
         """Get all orders."""
 
         if isinstance(self._orders, ReturnDict):
@@ -35,7 +35,7 @@ class DRFOrderRepository(OrderRepository):
 
         return [
             self._get_orders(order)
-            for order in self._orders
+            for order in self._orders if pk is None or order["id"] == pk
         ]
 
     def get_orders_details(self) -> List[OrderDetailDomain]:

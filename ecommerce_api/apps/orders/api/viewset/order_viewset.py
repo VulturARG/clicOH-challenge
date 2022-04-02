@@ -1,8 +1,7 @@
 from __future__ import annotations
 
+import json
 from typing import Any, Optional, Dict, List
-
-from django.db import models
 
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
@@ -19,9 +18,14 @@ from apps.orders.api.serializers.order_serializers import OrderSerializer, Order
 from apps.orders.models import OrderDetail, Order
 from apps.products.api.serializers import ProductListSerializer
 from apps.products.models import Product
+from domain.gateway import ServerConfiguration
+from domain.gateway.dolarsi_gateway import DollarURLGateway
 from domain.orders.exceptions import OrderException
+from domain.orders.gateway_service import DollarValue
 from domain.orders.service import OrderService
 from domain.vatidate.validate import Validate
+from ecommerce_api.settings.base import API_DOLLAR_SI_URL, API_DOLLAR_SI_USERNAME, \
+    API_DOLLAR_SI_PASSWORD
 
 
 class OrderListAPIViewSet(viewsets.ModelViewSet):
@@ -83,6 +87,8 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
     def update(self, request: Any, pk: Optional[int] = None, *args, **kwargs) -> Response:
         """Update an order"""
 
+        delete_status = [True, False]
+
         order = self.get_queryset(pk)
         if order is None:
             return Response({'message': 'order not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -94,15 +100,24 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
         order_model = order_serializer.save()
-        order_detail = self._order_details_for_update_or_delete(pk)
-        try:
-            updated_products = self._get_updated_products(order_serializer.data, order_detail)
-        except OrderException as error:
-            return Response(
-                {'message': 'error', 'error': error.MESSAGE},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        self._save(order_model, order_detail, updated_products)
+        for delete in delete_status:
+            order_detail = self._order_details_for_update_or_delete(pk)
+            try:
+                updated_products = self._get_updated_products(
+                    order_serializer_data=order_serializer.data,
+                    order_detail=order_detail,
+                    delete=delete
+                )
+            except OrderException as error:
+                return Response(
+                    {'message': 'error', 'error': error.MESSAGE},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            if delete:
+                self._save_products(updated_products)
+            else:
+                self._save(order_model, order_detail, updated_products)
+
         return Response({'message': 'order updated'}, status=status.HTTP_200_OK)
 
     def destroy(self, request: Any, pk: Optional[int] = None, *args, **kwargs) -> Response:
@@ -140,9 +155,52 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
     def get_total(self, request, pk=None) -> Response:
         """Get total of an order"""
 
+        order = self.get_queryset(pk)
+        if order is None:
+            return Response({'message': 'order not found'}, status=status.HTTP_404_NOT_FOUND)
+        orders_serializer = OrderRetrieveSerializer(order)
+
+        order_repository = DRFOrderRepository(
+            orders=orders_serializer.data,
+            order_details=self._order_details_serializer_data(pk=pk),
+            products=self._order_details_products()
+        )
+        service = OrderService(order_repository)
+        index = orders_serializer.data['id']
+        return Response({'message': service.get_total(index)}, status=status.HTTP_200_OK)
+
     @action(detail=True)
     def get_total_usd(self, request, pk=None) -> Response:
         """Get total of an order in USD"""
+
+        response = self.get_total(request, pk)
+        total_pesos = response.data['message']
+
+        dollar_prices = self._get_dollar_prices()
+        prices = json.loads(dollar_prices.text)
+
+        try:
+            dollar_blue_price = self._get_dolar_blue_price(prices)
+        except OrderException as error:
+            return Response({'message': error.MESSAGE}, status=status.HTTP_400_BAD_REQUEST)
+
+        total_usd = total_pesos * dollar_blue_price
+        return Response({'message': total_usd}, status=status.HTTP_200_OK)
+
+    def _get_dolar_blue_price(self, dollar_prices: List[Dict[str, Any]]) -> float:
+        order_repository = DRFOrderRepository()
+        service = OrderService(order_repository)
+        return service.get_dollar_blue_price(dollar_prices)
+
+    def _get_dollar_prices(self) -> Response:
+        server_configuration = ServerConfiguration(
+            api_root_url=API_DOLLAR_SI_URL,
+            user=API_DOLLAR_SI_USERNAME,
+            password=API_DOLLAR_SI_PASSWORD,
+        )
+        server_gateway = DollarURLGateway(server_configuration)
+        dollar_value = DollarValue(server_gateway)
+        return dollar_value.get_dollar_blue_values()
 
     def _get_order_detail(self, pk: Optional[int] = None) -> Any:
         """Get order detail in an order"""
@@ -219,14 +277,6 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
             product_instances.append(product_instance)
         return product_instances
 
-    def _delete(
-            self,
-            order_model: Order,
-            order_detail: List[Dict[str, Any]],
-            updated_products: Dict[str, Any]
-    ) -> None:
-        """Delete order, order detail and update stock of products."""
-
     def _order_details_for_update_or_delete(self, pk: int) -> List[Dict[str, Any]]:
         order_detail = []
         for detail in self._order_details_serializer_data(pk):
@@ -239,4 +289,3 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
                 }
             )
         return order_detail
-

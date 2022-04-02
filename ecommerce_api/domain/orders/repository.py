@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from domain.orders.base import Order, OrderDetail, Product
 
@@ -7,7 +7,7 @@ from domain.orders.base import Order, OrderDetail, Product
 class OrderRepository(ABC):
 
     @abstractmethod
-    def get_orders(self) -> List[Order]:
+    def get_orders(self, pk: Optional[int] = None) -> List[Order]:
         """Get the orders."""
 
     @abstractmethod

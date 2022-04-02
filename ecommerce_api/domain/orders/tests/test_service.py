@@ -1,10 +1,12 @@
+import json
 import unittest
 from datetime import datetime
 from unittest.mock import Mock
 
 from domain.orders.base import Order, Product, OrderDetail
 from domain.orders.exceptions import (
-    ProductNotUniqueError, NotEnoughStockError, ThereAreNoProductsError
+    ProductNotUniqueError, NotEnoughStockError, ThereAreNoProductsError,
+    DollarBluePriceNotFoundError
 )
 from domain.orders.repository import OrderRepository
 from domain.orders.service import OrderService
@@ -174,6 +176,9 @@ class ServiceTestCase(unittest.TestCase):
             }
         }
 
+        with open('api_return.json') as im:
+            self.api_return = json.load(im)
+
     def test_get_order_details(self):
         mock_repository = Mock(spec=OrderRepository)
         service = OrderService(mock_repository)
@@ -305,11 +310,37 @@ class ServiceTestCase(unittest.TestCase):
         service = OrderService(mock_repository)
 
         # values returned by the repository
+        mock_repository.get_orders.return_value = self.orders
         mock_repository.get_orders_details.return_value = self.order_details
         mock_repository.get_products.return_value = self.products
 
-        actual = service.get_total(self.orders[0])
+        actual = service.get_total(1)
         self.assertEqual(50.0, actual)
+
+    def test_get_dollar_blue_price(self):
+        mock_repository = Mock(spec=OrderRepository)
+        service = OrderService(mock_repository)
+
+        actual = service.get_dollar_blue_price(self.api_return)
+        self.assertEqual(199, actual)
+
+    def test_get_dollar_blue_price_not_found(self):
+        api_data = [{"casa": {"nombre": "Dolar Oficial"}}]
+
+        mock_repository = Mock(spec=OrderRepository)
+        service = OrderService(mock_repository)
+
+        with self.assertRaises(DollarBluePriceNotFoundError):
+            service.get_dollar_blue_price(api_data)
+
+    def test_get_dollar_blue_price_key_error(self):
+        api_data = [{"bad_name": {"nombre": "Dolar Oficial"}}]
+
+        mock_repository = Mock(spec=OrderRepository)
+        service = OrderService(mock_repository)
+
+        with self.assertRaises(DollarBluePriceNotFoundError):
+            service.get_dollar_blue_price(api_data)
 
 
 

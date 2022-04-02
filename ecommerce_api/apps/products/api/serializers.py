@@ -38,12 +38,3 @@ class ProductListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
-
-    # def to_representation(self, instance):
-    #     return {
-    #         'id': instance.id,
-    #         'name': instance.name,
-    #         'description': instance.description,
-    #         'price': instance.price,
-    #         'stock': instance.stock,
-    #     }

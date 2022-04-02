@@ -5,7 +5,7 @@ from domain.orders.exceptions import (
     ProductNotUniqueError,
     NotEnoughStockError,
     QuantityEqualOrLessThanZeroError,
-    ThereAreNoProductsError
+    ThereAreNoProductsError, DollarBluePriceNotFoundError
 )
 from domain.orders.repository import OrderRepository
 
@@ -14,6 +14,10 @@ class OrderService:
     """Manage orders."""
 
     KEY = 'product_id'
+    SELLER = 'casa'
+    DOLLAR_TYPE = "nombre"
+    DOLLAR_NAME = 'Dolar Blue'
+    BUY_OR_SELL = 'venta'
 
     def __init__(self, repository: OrderRepository) -> None:
         """Initialize the OrderService."""
@@ -90,15 +94,29 @@ class OrderService:
         order_detail_key_values_unique = set(order_detail_key_values)
         return len(order_detail_key_values) == len(order_detail_key_values_unique)
 
-    def get_total(self, order: Order) -> float:
-        order_details = self.get_order_details(order)
+    def get_total(self, index: int) -> float:
+        orders = self._repository.get_orders(index)
+        order_details = self.get_order_details(orders[0])
         products = self._repository.get_products()
         return sum([
-            detail.quantity * products[detail.product_id].price
+            int(detail.quantity) * float(products[detail.product_id].price)
             for detail in order_details
         ])
+
+    def get_dollar_blue_price(self, dollar_values: List[Dict[str, Any]]) -> float:
+        try:
+            for agency in dollar_values:
+                if agency[self.SELLER][self.DOLLAR_TYPE] == self.DOLLAR_NAME:
+                    return self._comma_value_to_float(agency[self.SELLER][self.BUY_OR_SELL])
+        except KeyError:
+            pass
+
+        raise DollarBluePriceNotFoundError()
 
     def _order_detail_to_dict(self, order_detail: List[OrderDetail]) -> List[Dict]:
         """Convert a list of OrderDetail to a dict."""
         return [dict(detail) for detail in order_detail]
 
+    def _comma_value_to_float(self, value: str) -> float:
+        value.replace('.', '')
+        return float(value.replace(',', '.'))
