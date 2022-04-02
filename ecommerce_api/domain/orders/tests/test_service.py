@@ -51,6 +51,27 @@ class ServiceTestCase(unittest.TestCase):
             ),
         ]
 
+        self.order_details_plus = [
+            OrderDetail(
+                id=None,
+                order_id=1,
+                product_id=1,
+                quantity=1,
+            ),
+            OrderDetail(
+                id=None,
+                order_id=1,
+                product_id=2,
+                quantity=2,
+            ),
+            OrderDetail(
+                id=None,
+                order_id=2,
+                product_id=2,
+                quantity=2,
+            )
+        ]
+
         self.order_details_create = [
             OrderDetail(
                 id=None,
@@ -152,6 +173,16 @@ class ServiceTestCase(unittest.TestCase):
                 "stock": 22
             }
         }
+
+    def test_get_order_details(self):
+        mock_repository = Mock(spec=OrderRepository)
+        service = OrderService(mock_repository)
+
+        # values returned by the repository
+        mock_repository.get_orders_details.return_value = self.order_details_plus
+
+        actual = service.get_order_details(self.orders[0])
+        self.assertEqual(self.order_details, actual)
 
     def test_get_order_list(self):
 
@@ -268,6 +299,9 @@ class ServiceTestCase(unittest.TestCase):
 
         actual = service.get_new_stock_of_the_products(self.new_products, True)
         self.assertEqual(self.product_deleted, actual)
+
+    def test_get_total(self):
+        pass
 
 
 
