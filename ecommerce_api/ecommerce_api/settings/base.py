@@ -142,4 +142,8 @@ SIMPLE_JWT = {
 STATIC_URL = '/static/'
 
 
-API_VERSION = 'v1/'
+API_VERSION = "v1/"
+
+API_DOLLAR_SI_URL = "https://www.dolarsi.com/api/api.php?type=valoresprincipales"
+API_DOLLAR_SI_USERNAME = ""
+API_DOLLAR_SI_PASSWORD = ""
