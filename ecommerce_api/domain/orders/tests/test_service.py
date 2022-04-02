@@ -301,7 +301,15 @@ class ServiceTestCase(unittest.TestCase):
         self.assertEqual(self.product_deleted, actual)
 
     def test_get_total(self):
-        pass
+        mock_repository = Mock(spec=OrderRepository)
+        service = OrderService(mock_repository)
+
+        # values returned by the repository
+        mock_repository.get_orders_details.return_value = self.order_details
+        mock_repository.get_products.return_value = self.products
+
+        actual = service.get_total(self.orders[0])
+        self.assertEqual(50.0, actual)
 
 
 

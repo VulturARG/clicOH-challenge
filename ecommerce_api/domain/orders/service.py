@@ -90,6 +90,14 @@ class OrderService:
         order_detail_key_values_unique = set(order_detail_key_values)
         return len(order_detail_key_values) == len(order_detail_key_values_unique)
 
+    def get_total(self, order: Order) -> float:
+        order_details = self.get_order_details(order)
+        products = self._repository.get_products()
+        return sum([
+            detail.quantity * products[detail.product_id].price
+            for detail in order_details
+        ])
+
     def _order_detail_to_dict(self, order_detail: List[OrderDetail]) -> List[Dict]:
         """Convert a list of OrderDetail to a dict."""
         return [dict(detail) for detail in order_detail]
