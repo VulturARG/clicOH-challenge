@@ -187,10 +187,6 @@ class ServiceTestCase(unittest.TestCase):
         self.assertEqual(self.order_details, actual)
 
     def test_get_order_list(self):
-
-        self.mock_repository = Mock(spec=OrderRepository)
-        self.service = OrderService(self.mock_repository)
-
         # values returned by the repository
         self.mock_repository.get_orders.return_value = self.orders
         self.mock_repository.get_orders_details.return_value = self.order_details
@@ -199,7 +195,6 @@ class ServiceTestCase(unittest.TestCase):
         self.assertEqual(self.expected_order_with_products, actual)
 
     def test_get_order_list_order_detail_empty(self):
-
         # values returned by the repository
         self.mock_repository.get_orders.return_value = self.orders
         self.mock_repository.get_orders_details.return_value = []
@@ -285,7 +280,6 @@ class ServiceTestCase(unittest.TestCase):
         self.assertEqual(self.product_deleted, actual)
 
     def test_get_total(self):
-
         # values returned by the repository
         self.mock_repository.get_orders.return_value = self.orders
         self.mock_repository.get_orders_details.return_value = self.order_details
