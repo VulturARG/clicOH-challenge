@@ -14,6 +14,13 @@ class ProductNotUniqueError(OrderException):
         super().__init__(self.MESSAGE)
 
 
+class ProductInstanceError(OrderException):
+    MESSAGE = "product instance not valid"
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE)
+
+
 class NotEnoughStockError(OrderException):
     MESSAGE = "not enough stock"
 
@@ -30,6 +37,13 @@ class QuantityEqualOrLessThanZeroError(OrderException):
 
 class ThereAreNoProductsError(OrderException):
     MESSAGE = "there are no products"
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE)
+
+
+class OrderDetailInstanceError(OrderException):
+    MESSAGE = "order detail instance not valid"
 
     def __init__(self) -> None:
         super().__init__(self.MESSAGE)

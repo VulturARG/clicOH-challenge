@@ -4,7 +4,7 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 
 from apps.orders.api.serializers.order_detail_serializers import OrderDetailSerializer
-from domain.vatidate.validate import Validate
+from domain.validate.validate import Validate
 
 
 class OrderDetailListAPIViewSet(viewsets.ModelViewSet):

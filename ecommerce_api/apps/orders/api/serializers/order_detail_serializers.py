@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.fields import empty
 
 from apps.orders.models import OrderDetail
-from domain.vatidate.validate import Validate
+from domain.validate.validate import Validate
 
 
 class OrderDetailSerializer(serializers.ModelSerializer):
