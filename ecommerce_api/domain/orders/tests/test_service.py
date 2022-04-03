@@ -176,9 +176,6 @@ class ServiceTestCase(unittest.TestCase):
             }
         }
 
-        with open('api_return.json') as im:
-            self.api_return = json.load(im)
-
     def test_get_order_details(self):
         mock_repository = Mock(spec=OrderRepository)
         service = OrderService(mock_repository)
