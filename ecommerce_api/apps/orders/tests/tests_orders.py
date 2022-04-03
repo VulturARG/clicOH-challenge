@@ -1,0 +1,196 @@
+from rest_framework import status
+from rest_framework.test import APITestCase
+
+from apps.orders.models import Order, OrderDetail
+from apps.products.models import Product
+
+
+class OrderTestCase(APITestCase):
+    list_url = "/v1/orders/"
+    detail_url = "/v1/orders/1/"
+    bad_detail_url = "/v1/orders/0/"
+    get_total_url = "/v1/orders/1/get_total/"
+    get_total_usd_url = "/v1/orders/1/get_total_usd/"
+    get_total_usd_bad_url = "/v1/orders/0/get_total_usd/"
+    get_orders_details = "/v1/orders-detail/"
+    get_products = "/v1/products/"
+
+    def setUp(self):
+        product_1 = Product(
+            **{
+                "name": 'Product 1',
+                "description": 'Product 1 description',
+                "price": '10.00',
+                "stock": '10',
+            }
+        )
+        product_1.save()
+
+        product_2 = Product(
+            **{
+                "name": 'Product 2',
+                "description": 'Product 2 description',
+                "price": '20.00',
+                "stock": '20',
+            }
+        )
+        product_2.save()
+
+        order_1 = Order(
+            **{
+                "id": 1,
+                "date_time": "2020-01-01T00:00:00Z",
+            }
+        )
+        order_1.save()
+
+        order_2 = Order(
+            **{
+                "id": 2,
+                "date_time": "2022-01-01T00:00:00Z",
+            }
+        )
+        order_2.save()
+
+        order_detail_1 = OrderDetail(
+            **{
+                "id": 1,
+                "product": product_1,
+                "quantity": 1,
+                "order": order_1,
+            }
+        )
+        order_detail_1.save()
+
+        order_detail_2 = OrderDetail(
+            **{
+                "id": 2,
+                "product": product_2,
+                "quantity": 2,
+                "order": order_1,
+            }
+        )
+        order_detail_2.save()
+
+        order_detail_3 = OrderDetail(
+            **{
+                "id": 3,
+                "product": product_1,
+                "quantity": 3,
+                "order": order_2,
+            }
+        )
+        order_detail_3.save()
+
+    def test_list_orders(self):
+        response = self.client.get(path=self.list_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response.data[0]['order_detail']), 2)
+        self.assertEqual(len(response.data[1]['order_detail']), 1)
+        self.assertEqual(response.data[0]['order_detail'][0]['product_id'], 1)
+
+    def test_list_one_order(self):
+        response = self.client.get(path=self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data[0]['order_detail']), 2)
+        self.assertEqual(len(response.data[0]['order_detail']), 2)
+        self.assertEqual(response.data[0]['order_detail'][0]['product_id'], 1)
+
+    def test_create_order(self):
+        order_detail = {
+            "order_detail": [
+                {"product_id": 1, "quantity": 1},
+                {"product_id": 2, "quantity": 1}
+            ]
+        }
+        response = self.client.post(path=self.list_url, data=order_detail, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual({'message': 'order created'}, response.data)
+
+    def test_update_order_one_update(self):
+        order_detail = {
+            "order_detail": [
+                {"id": 1, 'order': 1, "product_id": 1, "quantity": 3},
+            ]
+        }
+        response = self.client.get(path=self.get_orders_details)
+        self.assertEqual(response.data[0]['quantity'], 1)
+        self.assertEqual(response.data[1]['quantity'], 2)
+
+        response = self.client.get(path=self.get_products)
+        self.assertEqual(response.data[0]['stock'], 10)
+        self.assertEqual(response.data[1]['stock'], 20)
+
+        response = self.client.put(path=self.detail_url, data=order_detail, format="json")
+        self.assertEqual({'message': 'order updated'}, response.data)
+
+        response = self.client.get(path=self.get_orders_details)
+        self.assertEqual(response.data[0]['quantity'], 3)
+        self.assertEqual(response.data[1]['quantity'], 2)
+
+        response = self.client.get(path=self.get_products)
+        self.assertEqual(response.data[0]['stock'], 8)
+        self.assertEqual(response.data[1]['stock'], 20)
+
+    def test_update_order_two_updates(self):
+        order_detail = {
+            "order_detail": [
+                {"id": 1, 'order': 1, "product_id": 1, "quantity": 3},
+                {"id": 2, 'order': 1, "product_id": 2, "quantity": 4}
+            ]
+        }
+        response = self.client.get(path=self.get_orders_details)
+        self.assertEqual(response.data[0]['quantity'], 1)
+        self.assertEqual(response.data[1]['quantity'], 2)
+
+        response = self.client.get(path=self.get_products)
+        self.assertEqual(response.data[0]['stock'], 10)
+        self.assertEqual(response.data[1]['stock'], 20)
+
+        response = self.client.put(path=self.detail_url, data=order_detail, format="json")
+        self.assertEqual({'message': 'order updated'}, response.data)
+
+        response = self.client.get(path=self.get_orders_details)
+        self.assertEqual(response.data[0]['quantity'], 3)
+        self.assertEqual(response.data[1]['quantity'], 4)
+
+        response = self.client.get(path=self.get_products)
+        self.assertEqual(response.data[0]['stock'], 8)
+        self.assertEqual(response.data[1]['stock'], 18)
+
+    def test_update_order_with_bad_pk(self):
+        response = self.client.put(path=self.bad_detail_url, data={}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_order(self):
+        response = self.client.get(path=self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.client.delete(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual({'message': 'order deleted'}, response.data)
+
+        response = self.client.get(path=self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual({'message': 'order not found'}, response.data)
+
+    def test_delete_order_with_bad_pk(self):
+        response = self.client.delete(self.bad_detail_url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_total(self):
+        response = self.client.get(self.get_total_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual({'message': 50.0}, response.data)
+
+    def test_get_total_usd(self):
+        response = self.client.get(self.get_total_usd_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual({'message': 9950.0}, response.data)
+
+    def test_get_total_usd_bad_order(self):
+        response = self.client.get(self.get_total_usd_bad_url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual({'message': 'order not found'}, response.data)
+
