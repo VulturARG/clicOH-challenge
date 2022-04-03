@@ -5,7 +5,7 @@ from typing import List, Optional, Dict
 from rest_framework.serializers import ListSerializer
 from rest_framework.utils.serializer_helpers import ReturnDict
 
-from domain.orders.base import (
+from domain.orders.dataclass import (
     Order as OrderDomain,
     OrderDetail as OrderDetailDomain,
     Product,
@@ -45,10 +45,10 @@ class DRFOrderRepository(OrderRepository):
             return []
 
         if isinstance(self._order_details, ReturnDict):
-            return [self.get_order_detail_domain(self._order_details)]
+            return [self._get_order_detail_domain(self._order_details)]
 
         return [
-            self.get_order_detail_domain(order_detail)
+            self._get_order_detail_domain(order_detail)
             for order_detail in self._order_details
         ]
 
@@ -74,7 +74,7 @@ class DRFOrderRepository(OrderRepository):
             date_time=dict(order)["date_time"],
         )
 
-    def get_order_detail_domain(self, order_detail: ReturnDict) -> OrderDetailDomain:
+    def _get_order_detail_domain(self, order_detail: ReturnDict) -> OrderDetailDomain:
         """Get order detail domain class."""
 
         return OrderDetailDomain(

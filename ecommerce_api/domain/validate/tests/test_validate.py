@@ -96,5 +96,3 @@ class ValidateTestCase(unittest.TestCase):
     def test_have_letters_numbers_and_special_characters_with_space(self):
         actual = self.validate.have_upper_letters_numbers_and_special_characters('abc 123@def')
         self.assertFalse(actual)
-
-

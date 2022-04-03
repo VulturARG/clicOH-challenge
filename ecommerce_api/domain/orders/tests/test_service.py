@@ -2,7 +2,7 @@ import unittest
 from datetime import datetime
 from unittest.mock import Mock
 
-from domain.orders.base import Order, Product, OrderDetail
+from domain.orders.dataclass import Order, Product, OrderDetail
 from domain.orders.exceptions import (
     ProductNotUniqueError,
     NotEnoughStockError,

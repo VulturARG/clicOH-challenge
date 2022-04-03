@@ -14,7 +14,7 @@ from apps.users.api.serializers import (
 )
 
 
-class UserViewSet(viewsets.GenericViewSet):
+class UserViewSet(viewsets.ModelViewSet):
     model = User
     serializer_class = UserSerializer
     list_serializer_class = UserListSerializer
@@ -35,21 +35,23 @@ class UserViewSet(viewsets.GenericViewSet):
         user = self.get_object(pk)
         password_serializer = PasswordSerializer(data=request.data)
         if not password_serializer.is_valid():
-            return Response({
-                'message': 'wrong information sent',
-                'errors': password_serializer.errors
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    'message': 'wrong information sent',
+                    'errors': password_serializer.errors
+                },
+                status=status.HTTP_400_BAD_REQUEST)
 
         user.set_password(password_serializer.validated_data['password'])
         user.save()
         return Response({'message': 'password updated successfully'})
 
-    def list(self, request: Request) -> Response:
+    def list(self, request: Request, *args, **kwargs) -> Response:
         users = self.get_queryset()
         users_serializer = self.list_serializer_class(users, many=True)
         return Response(users_serializer.data, status=status.HTTP_200_OK)
 
-    def create(self, request: Request) -> Response:
+    def create(self, request: Request, *args, **kwargs) -> Response:
         user_serializer = self.serializer_class(data=request.data)
         if not user_serializer.is_valid():
             return Response(
@@ -63,12 +65,12 @@ class UserViewSet(viewsets.GenericViewSet):
         user_serializer.save()
         return Response({'message': 'successfully registered user'}, status=status.HTTP_201_CREATED)
 
-    def retrieve(self, request: Request, pk: Optional[int] = None) -> Response:
+    def retrieve(self, request: Request, pk: Optional[int] = None, *args, **kwargs) -> Response:
         user = self.get_object(pk)
         user_serializer = self.serializer_class(user)
         return Response(user_serializer.data)
 
-    def update(self, request: Request, pk: Optional[int] = None) -> Response:
+    def update(self, request: Request, pk: Optional[int] = None, *args, **kwargs) -> Response:
         user = self.get_object(pk)
         user_serializer = UpdateUserSerializer(user, data=request.data)
         if not user_serializer.is_valid():
@@ -83,7 +85,7 @@ class UserViewSet(viewsets.GenericViewSet):
         user_serializer.save()
         return Response({'message': 'user updated successfully'}, status=status.HTTP_200_OK)
 
-    def destroy(self, request: Request, pk: Optional[int] = None) -> Response:
+    def destroy(self, request: Request, pk: Optional[int] = None, *args, **kwargs) -> Response:
         user_destroy = self.model.objects.filter(id=pk).update(is_active=False)
         if user_destroy != 1:
             return Response({'message': 'user does not found'}, status=status.HTTP_404_NOT_FOUND)

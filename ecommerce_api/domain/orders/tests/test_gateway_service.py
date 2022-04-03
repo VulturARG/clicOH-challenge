@@ -35,5 +35,3 @@ class GatewayServiceTestCase(unittest.TestCase):
 
         with self.assertRaises(DollarBluePriceNotFoundError):
             self.dollar_value.get_dollar_blue_price()
-
-

@@ -91,5 +91,3 @@ class ProductsTestCase(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data["error"], "bad index")
-
-

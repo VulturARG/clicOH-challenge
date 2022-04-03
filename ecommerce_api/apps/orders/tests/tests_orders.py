@@ -12,6 +12,8 @@ class OrderTestCase(APITestCase):
     get_total_url = "/v1/orders/1/get_total/"
     get_total_usd_url = "/v1/orders/1/get_total_usd/"
     get_total_usd_bad_url = "/v1/orders/0/get_total_usd/"
+    get_orders_details = "/v1/orders-detail/"
+    get_products = "/v1/products/"
 
     def setUp(self):
         product_1 = Product(
@@ -112,22 +114,22 @@ class OrderTestCase(APITestCase):
                 {"id": 1, 'order': 1, "product_id": 1, "quantity": 3},
             ]
         }
-        response = self.client.get(path="/v1/orders-detail/")
+        response = self.client.get(path=self.get_orders_details)
         self.assertEqual(response.data[0]['quantity'], 1)
         self.assertEqual(response.data[1]['quantity'], 2)
 
-        response = self.client.get(path="/v1/products/")
+        response = self.client.get(path=self.get_products)
         self.assertEqual(response.data[0]['stock'], 10)
         self.assertEqual(response.data[1]['stock'], 20)
 
         response = self.client.put(path=self.detail_url, data=order_detail, format="json")
         self.assertEqual({'message': 'order updated'}, response.data)
 
-        response = self.client.get(path="/v1/orders-detail/")
+        response = self.client.get(path=self.get_orders_details)
         self.assertEqual(response.data[0]['quantity'], 3)
         self.assertEqual(response.data[1]['quantity'], 2)
 
-        response = self.client.get(path="/v1/products/")
+        response = self.client.get(path=self.get_products)
         self.assertEqual(response.data[0]['stock'], 8)
         self.assertEqual(response.data[1]['stock'], 20)
 
@@ -138,22 +140,22 @@ class OrderTestCase(APITestCase):
                 {"id": 2, 'order': 1, "product_id": 2, "quantity": 4}
             ]
         }
-        response = self.client.get(path="/v1/orders-detail/")
+        response = self.client.get(path=self.get_orders_details)
         self.assertEqual(response.data[0]['quantity'], 1)
         self.assertEqual(response.data[1]['quantity'], 2)
 
-        response = self.client.get(path="/v1/products/")
+        response = self.client.get(path=self.get_products)
         self.assertEqual(response.data[0]['stock'], 10)
         self.assertEqual(response.data[1]['stock'], 20)
 
         response = self.client.put(path=self.detail_url, data=order_detail, format="json")
         self.assertEqual({'message': 'order updated'}, response.data)
 
-        response = self.client.get(path="/v1/orders-detail/")
+        response = self.client.get(path=self.get_orders_details)
         self.assertEqual(response.data[0]['quantity'], 3)
         self.assertEqual(response.data[1]['quantity'], 4)
 
-        response = self.client.get(path="/v1/products/")
+        response = self.client.get(path=self.get_products)
         self.assertEqual(response.data[0]['stock'], 8)
         self.assertEqual(response.data[1]['stock'], 18)
 

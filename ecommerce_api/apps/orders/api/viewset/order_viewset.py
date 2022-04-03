@@ -45,7 +45,7 @@ class OrderAPIViewSet(viewsets.ModelViewSet):
             return self.get_serializer().Meta.model.objects.all()
         return self.get_serializer().Meta.model.objects.filter(id=pk).first()
 
-    def list(self, request: Any, *args, **kwargs) -> Response:
+    def list(self, request: Request, *args, **kwargs) -> Response:
         """List orders"""
 
         orders_serializer = self.get_serializer(self.get_queryset(), many=True)
@@ -56,7 +56,7 @@ class OrderAPIViewSet(viewsets.ModelViewSet):
 
         return Response(service.get_orders(), status=status.HTTP_200_OK)
 
-    def retrieve(self, request: Any, pk: int = None, *args, **kwargs) -> Response:
+    def retrieve(self, request: Request, pk: int = None, *args, **kwargs) -> Response:
         """Retrieve an order"""
 
         order = self.get_queryset(pk)
@@ -72,7 +72,7 @@ class OrderAPIViewSet(viewsets.ModelViewSet):
 
         return Response(service.get_orders(), status=status.HTTP_200_OK)
 
-    def create(self, request: Any, *args, **kwargs) -> Response:
+    def create(self, request: Request, *args, **kwargs) -> Response:
         """Create a new order"""
 
         order_serializer = self.serializer_class(data=request.data, own_validate=self.own_validate)
@@ -94,7 +94,7 @@ class OrderAPIViewSet(viewsets.ModelViewSet):
         self._save_order_details(order_details)
         return Response({'message': 'order created'}, status=status.HTTP_201_CREATED)
 
-    def update(self, request: Any, pk: Optional[int] = None, *args, **kwargs) -> Response:
+    def update(self, request: Request, pk: Optional[int] = None, *args, **kwargs) -> Response:
         """Update an order"""
 
         new_order_detail = request.data['order_detail'] if 'order_detail' in request.data else []
@@ -120,7 +120,7 @@ class OrderAPIViewSet(viewsets.ModelViewSet):
 
         return Response({'message': 'order updated'}, status=status.HTTP_200_OK)
 
-    def destroy(self, request: Any, pk: Optional[int] = None, *args, **kwargs) -> Response:
+    def destroy(self, request: Request, pk: Optional[int] = None, *args, **kwargs) -> Response:
         """Delete an order"""
 
         order = self.get_queryset(pk)

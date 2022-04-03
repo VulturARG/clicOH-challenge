@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict, Optional
 
-from domain.orders.base import Order, OrderDetail, Product
+from domain.orders.dataclass import Order, OrderDetail, Product
 
 
 class OrderRepository(ABC):

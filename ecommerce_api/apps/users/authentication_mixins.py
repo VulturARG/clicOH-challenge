@@ -9,7 +9,6 @@ from apps.users.models import User
 
 
 class Authentication(authentication.BaseAuthentication):
-    # user = None
 
     def get_user(self, request: Request) -> Optional[User]:
         token = get_authorization_header(request).split()
@@ -27,7 +26,6 @@ class Authentication(authentication.BaseAuthentication):
         if user is None:
             return None
 
-        # self.user = user
         return user
 
     def authenticate(self, request: Request) -> Tuple[User, int]:

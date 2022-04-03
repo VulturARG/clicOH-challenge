@@ -1,6 +1,6 @@
 from typing import List, Dict, Any, Optional
 
-from domain.orders.base import OrderDetail, Order, Product
+from domain.orders.dataclass import OrderDetail, Order, Product
 from domain.orders.exceptions import (
     ProductNotUniqueError,
     NotEnoughStockError,
