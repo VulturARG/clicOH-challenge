@@ -11,6 +11,7 @@ class OrderTestCase(APITestCase):
     bad_detail_url = "/v1/orders/0/"
     get_total_url = "/v1/orders/1/get_total/"
     get_total_usd_url = "/v1/orders/1/get_total_usd/"
+    get_total_usd_bad_url = "/v1/orders/0/get_total_usd/"
 
     def setUp(self):
         product_1 = Product(
@@ -105,24 +106,62 @@ class OrderTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual({'message': 'order created'}, response.data)
 
-    # def test_update_order_two_updates(self):
-    #     order_detail = {
-    #         "order_detail": [
-    #             {"product_id": 1, "quantity": 3},
-    #             {"product_id": 2, "quantity": 4}
-    #         ]
-    #     }
-    #     response = self.client.put(path=self.detail_url, data=order_detail, format="json")
-    #     self.assertEqual({'message': 'order updated'}, response.data)
-    #     response = self.client.get(path="/v1/products/1/")
-    #     print(response.data)
+    def test_update_order_one_update(self):
+        order_detail = {
+            "order_detail": [
+                {"id": 1, 'order': 1, "product_id": 1, "quantity": 3},
+            ]
+        }
+        response = self.client.get(path="/v1/orders-detail/")
+        self.assertEqual(response.data[0]['quantity'], 1)
+        self.assertEqual(response.data[1]['quantity'], 2)
+
+        response = self.client.get(path="/v1/products/")
+        self.assertEqual(response.data[0]['stock'], 10)
+        self.assertEqual(response.data[1]['stock'], 20)
+
+        response = self.client.put(path=self.detail_url, data=order_detail, format="json")
+        self.assertEqual({'message': 'order updated'}, response.data)
+
+        response = self.client.get(path="/v1/orders-detail/")
+        self.assertEqual(response.data[0]['quantity'], 3)
+        self.assertEqual(response.data[1]['quantity'], 2)
+
+        response = self.client.get(path="/v1/products/")
+        self.assertEqual(response.data[0]['stock'], 8)
+        # self.assertEqual(response.data[1]['stock'], 20)
+
+    def test_update_order_two_updates(self):
+        order_detail = {
+            "order_detail": [
+                {"id": 1, 'order': 1, "product_id": 1, "quantity": 3},
+                {"id": 2, 'order': 1, "product_id": 2, "quantity": 4}
+            ]
+        }
+        response = self.client.get(path="/v1/orders-detail/")
+        self.assertEqual(response.data[0]['quantity'], 1)
+        self.assertEqual(response.data[1]['quantity'], 2)
+
+        response = self.client.get(path="/v1/products/")
+        self.assertEqual(response.data[0]['stock'], 10)
+        self.assertEqual(response.data[1]['stock'], 20)
+
+        response = self.client.put(path=self.detail_url, data=order_detail, format="json")
+        self.assertEqual({'message': 'order updated'}, response.data)
+
+        response = self.client.get(path="/v1/orders-detail/")
+        self.assertEqual(response.data[0]['quantity'], 3)
+        self.assertEqual(response.data[1]['quantity'], 4)
+
+        response = self.client.get(path="/v1/products/")
+        self.assertEqual(response.data[0]['stock'], 8)
+        self.assertEqual(response.data[1]['stock'], 18)
 
     def test_update_order_with_bad_pk(self):
         response = self.client.put(path=self.bad_detail_url, data={}, format="json")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_order(self):
-        """Eliminar una orden. Restaura stock del producto"""
         response = self.client.get(path=self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -147,4 +186,9 @@ class OrderTestCase(APITestCase):
         response = self.client.get(self.get_total_usd_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual({'message': 9950.0}, response.data)
+
+    def test_get_total_usd_bad_order(self):
+        response = self.client.get(self.get_total_usd_bad_url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual({'message': 'order not found'}, response.data)
 

@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.fields import empty
 
 from apps.products.models import Product
-from domain.vatidate.validate import Validate
+from domain.validate.validate import Validate
 
 
 class ProductSerializer(serializers.ModelSerializer):

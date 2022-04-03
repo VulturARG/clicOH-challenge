@@ -1,6 +1,6 @@
 import unittest
 
-from domain.vatidate.validate import Validate
+from domain.validate.validate import Validate
 
 
 class ValidateTestCase(unittest.TestCase):

@@ -42,16 +42,20 @@ class ProductsTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_create_product(self):
-        data = {
+        new_product = {
             "name": 'Product 3',
             "description": 'Product 3 description',
             "price": '300.00',
             "stock": '30',
         }
 
-        response = self.client.post(path=self.list_url, data=data, format="json")
+        response = self.client.post(path=self.list_url, data=new_product, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data["message"], "product created")
+
+        response = self.client.get(path="/v1/products/3/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["name"], "Product 3")
 
     def test_update_product(self):
         response = self.client.put(

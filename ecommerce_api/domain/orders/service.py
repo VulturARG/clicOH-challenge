@@ -5,7 +5,7 @@ from domain.orders.exceptions import (
     ProductNotUniqueError,
     NotEnoughStockError,
     QuantityEqualOrLessThanZeroError,
-    ThereAreNoProductsError, DollarBluePriceNotFoundError
+    ThereAreNoProductsError
 )
 from domain.orders.repository import OrderRepository
 
@@ -14,10 +14,6 @@ class OrderService:
     """Manage orders."""
 
     KEY = 'product_id'
-    SELLER = 'casa'
-    DOLLAR_TYPE = "nombre"
-    DOLLAR_NAME = 'Dolar Blue'
-    BUY_OR_SELL = 'venta'
 
     def __init__(self, repository: OrderRepository) -> None:
         """Initialize the OrderService."""
@@ -103,20 +99,7 @@ class OrderService:
             for detail in order_details
         ])
 
-    def get_dollar_blue_price(self, dollar_values: List[Dict[str, Any]]) -> float:
-        try:
-            for agency in dollar_values:
-                if agency[self.SELLER][self.DOLLAR_TYPE] == self.DOLLAR_NAME:
-                    return self._comma_value_to_float(agency[self.SELLER][self.BUY_OR_SELL])
-        except KeyError:
-            pass
-
-        raise DollarBluePriceNotFoundError()
-
     def _order_detail_to_dict(self, order_detail: List[OrderDetail]) -> List[Dict]:
         """Convert a list of OrderDetail to a dict."""
         return [dict(detail) for detail in order_detail]
 
-    def _comma_value_to_float(self, value: str) -> float:
-        value.replace('.', '')
-        return float(value.replace(',', '.'))
