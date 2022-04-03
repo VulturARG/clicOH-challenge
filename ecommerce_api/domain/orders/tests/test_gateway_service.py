@@ -37,5 +37,3 @@ class GatewayServiceTestCase(unittest.TestCase):
             self.dollar_value.get_dollar_blue_price()
 
 
-if __name__ == '__main__':
-    unittest.main()
