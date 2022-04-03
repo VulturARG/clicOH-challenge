@@ -109,7 +109,11 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
             try:
                 updated_products = self._get_updated_products(
                     order_serializer_data=order_serializer.data,
-                    order_detail=order_detail if delete else new_order_detail,
+                    order_detail=self._match_order_detail_with_new_order_detail(
+                        order_detail,
+                        new_order_detail,
+                        delete
+                    ),
                     delete=delete
                 )
             except OrderException as error:
@@ -316,3 +320,17 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
         for detail in orden_details:
             detail['order'] = pk
         return orden_details
+
+    def _match_order_detail_with_new_order_detail(
+            self,
+            order_details: List[Dict[str, Any]],
+            new_order_details: List[Dict[str, Any]],
+            delete: bool
+    ) -> List[Dict[str, Any]]:
+        index = [
+            new_detail["id"]
+            for new_detail in new_order_details
+            if new_detail['id'] is not None
+        ]
+        matched_order_details = [detail for detail in order_details if detail['id'] in index]
+        return matched_order_details if delete else new_order_details

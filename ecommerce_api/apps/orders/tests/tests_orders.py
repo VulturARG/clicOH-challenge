@@ -129,7 +129,7 @@ class OrderTestCase(APITestCase):
 
         response = self.client.get(path="/v1/products/")
         self.assertEqual(response.data[0]['stock'], 8)
-        # self.assertEqual(response.data[1]['stock'], 20)
+        self.assertEqual(response.data[1]['stock'], 20)
 
     def test_update_order_two_updates(self):
         order_detail = {
