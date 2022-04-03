@@ -1,12 +1,12 @@
-import json
 import unittest
 from datetime import datetime
 from unittest.mock import Mock
 
 from domain.orders.base import Order, Product, OrderDetail
 from domain.orders.exceptions import (
-    ProductNotUniqueError, NotEnoughStockError, ThereAreNoProductsError,
-    DollarBluePriceNotFoundError
+    ProductNotUniqueError,
+    NotEnoughStockError,
+    ThereAreNoProductsError,
 )
 from domain.orders.repository import OrderRepository
 from domain.orders.service import OrderService
@@ -176,152 +176,120 @@ class ServiceTestCase(unittest.TestCase):
             }
         }
 
+        self.mock_repository = Mock(spec=OrderRepository)
+        self.service = OrderService(self.mock_repository)
+
     def test_get_order_details(self):
-        mock_repository = Mock(spec=OrderRepository)
-        service = OrderService(mock_repository)
-
         # values returned by the repository
-        mock_repository.get_orders_details.return_value = self.order_details_plus
+        self.mock_repository.get_orders_details.return_value = self.order_details_plus
 
-        actual = service.get_order_details(self.orders[0])
+        actual = self.service.get_order_details(self.orders[0])
         self.assertEqual(self.order_details, actual)
 
     def test_get_order_list(self):
 
-        mock_repository = Mock(spec=OrderRepository)
-        service = OrderService(mock_repository)
+        self.mock_repository = Mock(spec=OrderRepository)
+        self.service = OrderService(self.mock_repository)
 
         # values returned by the repository
-        mock_repository.get_orders.return_value = self.orders
-        mock_repository.get_orders_details.return_value = self.order_details
+        self.mock_repository.get_orders.return_value = self.orders
+        self.mock_repository.get_orders_details.return_value = self.order_details
 
-        actual = service.get_orders()
+        actual = self.service.get_orders()
         self.assertEqual(self.expected_order_with_products, actual)
 
     def test_get_order_list_order_detail_empty(self):
 
-        mock_repository = Mock(spec=OrderRepository)
-        service = OrderService(mock_repository)
-
         # values returned by the repository
-        mock_repository.get_orders.return_value = self.orders
-        mock_repository.get_orders_details.return_value = []
+        self.mock_repository.get_orders.return_value = self.orders
+        self.mock_repository.get_orders_details.return_value = []
 
-        actual = service.get_orders()
+        actual = self.service.get_orders()
         self.assertEqual(self.expected_order_without_products, actual)
 
     def test_are_products_unique(self):
-        mock_repository = Mock(spec=OrderRepository)
-        service = OrderService(mock_repository)
-
         # values returned by the repository
-        mock_repository.get_orders.return_value = self.orders
-        mock_repository.get_orders_details.return_value = self.order_details
-        mock_repository.get_products.return_value = self.products
+        self.mock_repository.get_orders.return_value = self.orders
+        self.mock_repository.get_orders_details.return_value = self.order_details
+        self.mock_repository.get_products.return_value = self.products
 
-        actual = service.are_products_unique(self.new_products)
+        actual = self.service.are_products_unique(self.new_products)
         self.assertTrue(actual)
 
     def test_are_products_not_unique(self):
-        mock_repository = Mock(spec=OrderRepository)
-        service = OrderService(mock_repository)
-
         # values returned by the repository
-        mock_repository.get_orders.return_value = self.orders
-        mock_repository.get_orders_details.return_value = self.order_details
-        mock_repository.get_products.return_value = self.products
+        self.mock_repository.get_orders.return_value = self.orders
+        self.mock_repository.get_orders_details.return_value = self.order_details
+        self.mock_repository.get_products.return_value = self.products
 
-        actual = service.are_products_unique(self.new_products_are_equal)
+        actual = self.service.are_products_unique(self.new_products_are_equal)
         self.assertFalse(actual)
 
     def test_get_new_stock_of_the_products_with_not_products(self):
-        mock_repository = Mock(spec=OrderRepository)
-        service = OrderService(mock_repository)
-
         # values returned by the repository
-        mock_repository.get_orders.return_value = self.orders
-        mock_repository.get_orders_details.return_value = self.order_details
-        mock_repository.get_products.return_value = self.products
+        self.mock_repository.get_orders.return_value = self.orders
+        self.mock_repository.get_orders_details.return_value = self.order_details
+        self.mock_repository.get_products.return_value = self.products
 
-        actual = service.get_new_stock_of_the_products([])
+        actual = self.service.get_new_stock_of_the_products([])
         self.assertEqual({}, actual)
 
     def test_get_new_stock_of_the_products_with_not_enough_stock(self):
-        mock_repository = Mock(spec=OrderRepository)
-        service = OrderService(mock_repository)
-
         # values returned by the repository
-        mock_repository.get_products.return_value = self.products
+        self.mock_repository.get_products.return_value = self.products
 
         self.new_products[0]['quantity'] = 11
 
         with self.assertRaises(NotEnoughStockError):
-            service.get_new_stock_of_the_products(self.new_products)
+            self.service.get_new_stock_of_the_products(self.new_products)
 
     def test_get_new_stock_of_the_products_with_products_not_unique(self):
-        mock_repository = Mock(spec=OrderRepository)
-        service = OrderService(mock_repository)
-
         # values returned by the repository
-        mock_repository.get_products.return_value = self.products
+        self.mock_repository.get_products.return_value = self.products
 
         with self.assertRaises(ProductNotUniqueError):
-            service.get_new_stock_of_the_products(self.new_products_are_equal)
+            self.service.get_new_stock_of_the_products(self.new_products_are_equal)
 
     def test_get_new_stock_of_the_products_with_not_product(self):
-        mock_repository = Mock(spec=OrderRepository)
-        service = OrderService(mock_repository)
-
         # values returned by the repository
-        mock_repository.get_products.return_value = {}
+        self.mock_repository.get_products.return_value = {}
 
         with self.assertRaises(ThereAreNoProductsError):
-            service.get_new_stock_of_the_products(self.new_products)
+            self.service.get_new_stock_of_the_products(self.new_products)
 
     def test_get_new_stock_of_the_products_one_order_detail(self):
-        mock_repository = Mock(spec=OrderRepository)
-        service = OrderService(mock_repository)
-
         # values returned by the repository
-        mock_repository.get_orders.return_value = self.orders
-        mock_repository.get_orders_details.return_value = self.order_details_create
-        mock_repository.get_products.return_value = self.products
+        self.mock_repository.get_orders.return_value = self.orders
+        self.mock_repository.get_orders_details.return_value = self.order_details_create
+        self.mock_repository.get_products.return_value = self.products
 
-        actual = service.get_new_stock_of_the_products([self.new_products[0]])
+        actual = self.service.get_new_stock_of_the_products([self.new_products[0]])
         self.assertEqual(self.product_indexed["1"], actual["1"])
 
     def test_get_new_stock_of_the_products_two_order_detail(self):
-        mock_repository = Mock(spec=OrderRepository)
-        service = OrderService(mock_repository)
-
         # values returned by the repository
-        mock_repository.get_orders.return_value = self.orders
-        mock_repository.get_orders_details.return_value = self.order_details_create
-        mock_repository.get_products.return_value = self.products
+        self.mock_repository.get_orders.return_value = self.orders
+        self.mock_repository.get_orders_details.return_value = self.order_details_create
+        self.mock_repository.get_products.return_value = self.products
 
-        actual = service.get_new_stock_of_the_products(self.new_products)
+        actual = self.service.get_new_stock_of_the_products(self.new_products)
         self.assertEqual(self.product_indexed, actual)
 
     def test_get_new_stock_of_the_products_delete_true(self):
-        mock_repository = Mock(spec=OrderRepository)
-        service = OrderService(mock_repository)
-
         # values returned by the repository
-        mock_repository.get_orders.return_value = self.orders
-        mock_repository.get_orders_details.return_value = self.order_details_create
-        mock_repository.get_products.return_value = self.products
+        self.mock_repository.get_orders.return_value = self.orders
+        self.mock_repository.get_orders_details.return_value = self.order_details_create
+        self.mock_repository.get_products.return_value = self.products
 
-        actual = service.get_new_stock_of_the_products(self.new_products, True)
+        actual = self.service.get_new_stock_of_the_products(self.new_products, True)
         self.assertEqual(self.product_deleted, actual)
 
     def test_get_total(self):
-        mock_repository = Mock(spec=OrderRepository)
-        service = OrderService(mock_repository)
 
         # values returned by the repository
-        mock_repository.get_orders.return_value = self.orders
-        mock_repository.get_orders_details.return_value = self.order_details
-        mock_repository.get_products.return_value = self.products
+        self.mock_repository.get_orders.return_value = self.orders
+        self.mock_repository.get_orders_details.return_value = self.order_details
+        self.mock_repository.get_products.return_value = self.products
 
-        actual = service.get_total(1)
+        actual = self.service.get_total(1)
         self.assertEqual(50.0, actual)
