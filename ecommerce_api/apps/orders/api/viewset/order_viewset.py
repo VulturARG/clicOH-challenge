@@ -31,12 +31,16 @@ from ecommerce_api.settings.base import (
 )
 
 
-class OrderListAPIViewSet(viewsets.ModelViewSet):
+class OrderAPIViewSet(viewsets.ModelViewSet):
+    """Order ViewSet"""
+
     serializer_class = OrderSerializer
     serializer_class_order_detail = OrderDetailSerializer
     own_validate = Validate()
 
     def get_queryset(self, pk: Optional[int] = None) -> Any:
+        """Get order queryset."""
+
         if pk is None:
             return self.get_serializer().Meta.model.objects.all()
         return self.get_serializer().Meta.model.objects.filter(id=pk).first()
@@ -53,6 +57,8 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
         return Response(service.get_orders(), status=status.HTTP_200_OK)
 
     def retrieve(self, request: Any, pk: int = None, *args, **kwargs) -> Response:
+        """Retrieve an order"""
+
         order = self.get_queryset(pk)
         if order is None:
             return Response({'message': 'order not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -84,13 +90,13 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
                 {'message': 'error', 'error': error.MESSAGE},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        self._save(order_details, updated_products)
+        self._save_products(updated_products)
+        self._save_order_details(order_details)
         return Response({'message': 'order created'}, status=status.HTTP_201_CREATED)
 
     def update(self, request: Any, pk: Optional[int] = None, *args, **kwargs) -> Response:
         """Update an order"""
 
-        delete_status = [True, False]
         new_order_detail = request.data['order_detail'] if 'order_detail' in request.data else []
 
         order = self.get_queryset(pk)
@@ -104,34 +110,13 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
         order_serializer.save()
-        for delete in delete_status:
-            order_detail = self._order_details_for_update_or_delete(pk)
-            try:
-                updated_products = self._get_updated_products(
-                    order_serializer_data=order_serializer.data,
-                    order_detail=self._match_order_detail_with_new_order_detail(
-                        order_detail,
-                        new_order_detail,
-                        delete
-                    ),
-                    delete=delete
-                )
-            except OrderException as error:
-                return Response(
-                    {'message': 'error', 'error': error.MESSAGE},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-            try:
-                if delete:
-                    self._save_products(updated_products)
-                else:
-                    self._save(new_order_detail, updated_products)
-            except OrderException as error:
-                return Response(
-                    {'message': 'error', 'error': error.MESSAGE},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+        try:
+            self._update_order_details_and_products(new_order_detail, order_serializer, pk)
+        except OrderException as error:
+            return Response(
+                {'message': 'error', 'error': error.MESSAGE},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         return Response({'message': 'order updated'}, status=status.HTTP_200_OK)
 
@@ -156,12 +141,6 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
                 order_detail=order_detail,
                 delete=True
             )
-        except OrderException as error:
-            return Response(
-                {'message': 'error', 'error': error.MESSAGE},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        try:
             self._save_products(updated_products)
         except OrderException as error:
             return Response(
@@ -211,6 +190,8 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
         return Response({'message': total_usd}, status=status.HTTP_200_OK)
 
     def _get_dolar_blue_price(self) -> float:
+        """Get dollar blue price for external API."""
+
         server_configuration = ServerConfiguration(
             api_root_url=API_DOLLAR_SI_URL,
             user=API_DOLLAR_SI_USERNAME,
@@ -221,7 +202,7 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
         return dollar_value.get_dollar_blue_price()
 
     def _get_order_detail(self, pk: Optional[int] = None) -> Any:
-        """Get order detail in an order"""
+        """Get order details in an order"""
 
         if pk is None:
             return OrderDetail.objects.all()
@@ -231,7 +212,6 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
         """Get order details in serializer data"""
 
         order_details = self._get_order_detail(pk)
-
         if order_details is None:
             return None
 
@@ -240,14 +220,15 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
 
     def _get_queryset_products(self, pk: Optional[int] = None) -> Any:
         """Get products from order."""
+
         if pk is None:
             return Product.objects.all()
         return Product.objects.filter(order=pk).first()
 
     def _order_details_products(self, pk: Optional[int] = None) -> Optional[ListSerializer]:
         """Get all products in an order."""
-        products = self._get_queryset_products(pk)
 
+        products = self._get_queryset_products(pk)
         if products is None:
             return None
 
@@ -269,16 +250,13 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
         service = OrderService(order_repository)
         return service.get_new_stock_of_the_products(order_detail, delete)
 
-    def _save(
+    def _save_order_details(
             self,
-            order_detail: List[Dict[str, Any]],
-            updated_products: Dict[str, Any]
+            order_details: List[Dict[str, Any]]
     ) -> None:
-        """Save order, order detail and update stock of products."""
+        """Save order details."""
 
-        self._save_products(updated_products)
-
-        for detail in order_detail:
+        for detail in order_details:
             query_set = None
             if "id" in detail:
                 query_set = OrderDetail.objects.filter(pk=detail["id"]).first()
@@ -292,6 +270,8 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
             order_detail_serializer.save()
 
     def _save_products(self, updated_products) -> None:
+        """Save products."""
+
         for product in updated_products.values():
             product_serializer = ProductSerializer(
                 Product.objects.filter(pk=product["id"]).first(),
@@ -334,3 +314,28 @@ class OrderListAPIViewSet(viewsets.ModelViewSet):
         ]
         matched_order_details = [detail for detail in order_details if detail['id'] in index]
         return matched_order_details if delete else new_order_details
+
+    def _update_order_details_and_products(
+            self,
+            new_order_detail: List[Dict[str, Any]],
+            order_serializer: OrderSerializer,
+            pk: int
+    ) -> None:
+        """Update order details and products."""
+
+        for delete in [True, False]:
+            order_detail = self._order_details_for_update_or_delete(pk)
+
+            updated_products = self._get_updated_products(
+                order_serializer_data=order_serializer.data,
+                order_detail=self._match_order_detail_with_new_order_detail(
+                    order_detail,
+                    new_order_detail,
+                    delete
+                ),
+                delete=delete
+            )
+            self._save_products(updated_products)
+            if not delete:
+                self._save_order_details(new_order_detail)
+
