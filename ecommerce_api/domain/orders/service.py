@@ -1,6 +1,6 @@
 from typing import List, Dict, Any, Optional
 
-from domain.orders.base import OrderDetail, Order
+from domain.orders.base import OrderDetail, Order, Product
 from domain.orders.exceptions import (
     ProductNotUniqueError,
     NotEnoughStockError,
@@ -15,13 +15,12 @@ class OrderService:
 
     KEY = 'product_id'
 
-    def __init__(self, repository: OrderRepository) -> None:
-        """Initialize the OrderService."""
-
+    def __init__(self, repository: OrderRepository):
         self._repository = repository
 
     def get_orders(self) -> List[Dict]:
         """Return all orders."""
+
         orders = []
         for order in self._repository.get_orders():
             order_detail = self.get_order_details(order)
@@ -35,6 +34,8 @@ class OrderService:
         return orders
 
     def get_order_details(self, order: Order) -> List[OrderDetail]:
+        """Return the order details."""
+
         orders_details = self._repository.get_orders_details()
         return [
             detail for detail in orders_details
@@ -46,7 +47,7 @@ class OrderService:
             new_products: List[Dict[str, Any]],
             delete: Optional[bool] = False
     ) -> Dict[str, Any]:
-        """Create a new order."""
+        """Return the new stock of the products."""
 
         factor = -1 if delete else 1
 
@@ -59,6 +60,16 @@ class OrderService:
         products = self._repository.get_products()
         if len(products) == 0:
             raise ThereAreNoProductsError()
+
+        return self._update_stocks_in_products(factor, new_products, products)
+
+    def _update_stocks_in_products(
+            self,
+            factor: int,
+            new_products: List[Dict[str, Any]],
+            products: Dict[str, Product]
+    ) -> Dict[str, Any]:
+        """Update the products."""
 
         updated_products = {}
         for product in new_products:
@@ -80,7 +91,6 @@ class OrderService:
                 "price": product_class.price,
                 "stock": new_stock
             }
-
         return updated_products
 
     def are_products_unique(self, order_detail: List[Dict[str, Any]]) -> bool:
@@ -91,6 +101,8 @@ class OrderService:
         return len(order_detail_key_values) == len(order_detail_key_values_unique)
 
     def get_total(self, index: int) -> float:
+        """Return the total amount of the order."""
+
         orders = self._repository.get_orders(index)
         order_details = self.get_order_details(orders[0])
         products = self._repository.get_products()
@@ -101,5 +113,6 @@ class OrderService:
 
     def _order_detail_to_dict(self, order_detail: List[OrderDetail]) -> List[Dict]:
         """Convert a list of OrderDetail to a dict."""
+
         return [dict(detail) for detail in order_detail]
 
