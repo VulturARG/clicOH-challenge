@@ -1,6 +1,9 @@
 from datetime import timedelta
 from pathlib import Path
 
+from decouple import config
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -9,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'e+3qek7(i5evq)87ff5d8e@bjsd&q_h)w5qejoojqhhx%$4j+h'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -141,9 +144,8 @@ SIMPLE_JWT = {
 
 STATIC_URL = '/static/'
 
+API_VERSION = config('API_VERSION')
 
-API_VERSION = "v1/"
-
-API_DOLLAR_SI_URL = "https://www.dolarsi.com/api/api.php?type=valoresprincipales"
-API_DOLLAR_SI_USERNAME = ""
-API_DOLLAR_SI_PASSWORD = ""
+API_DOLLAR_SI_URL = config('API_DOLLAR_SI_URL')
+API_DOLLAR_SI_USERNAME = config('API_DOLLAR_SI_USERNAME')
+API_DOLLAR_SI_PASSWORD = config('API_DOLLAR_SI_PASSWORD')
