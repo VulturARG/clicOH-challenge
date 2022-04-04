@@ -19,3 +19,17 @@ class GatewayEndpointNotFound(GatewayException):
 
     def __init__(self) -> None:
         super().__init__(self.MESSAGE)
+
+
+class DollarBluePriceNotFoundError(GatewayException):
+    MESSAGE = "dollar blue price not found"
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE)
+
+
+class DollarBluePriceIsZero(GatewayException):
+    MESSAGE = "dollar blue price is zero"
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE)
