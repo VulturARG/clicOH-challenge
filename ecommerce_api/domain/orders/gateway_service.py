@@ -25,6 +25,8 @@ class DollarValue:
 
     def get_dollar_blue_price(self) -> float:
         dollar_value_response = self.get_dollar_blue_values()
+        if len(dollar_value_response.text) == 0:
+            raise DollarBluePriceNotFoundError()
         dollar_values = json.loads(dollar_value_response.text)
         try:
             for agency in dollar_values:

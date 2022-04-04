@@ -20,6 +20,7 @@ from apps.products.api.serializers import ProductListSerializer, ProductSerializ
 from apps.products.models import Product
 from domain.gateway import ServerConfiguration
 from domain.gateway.dolarsi_gateway import DollarURLGateway
+from domain.gateway.exceptions import GatewayException
 from domain.orders.exceptions import OrderException, ProductInstanceError, OrderDetailInstanceError
 from domain.orders.gateway_service import DollarValue
 from domain.orders.service import OrderService
@@ -183,7 +184,7 @@ class OrderAPIViewSet(viewsets.ModelViewSet):
 
         try:
             dollar_blue_price = self._get_dolar_blue_price()
-        except OrderException as error:
+        except (OrderException, GatewayException) as error:
             return Response({'message': error.MESSAGE}, status=status.HTTP_400_BAD_REQUEST)
 
         total_usd = total_pesos * dollar_blue_price
