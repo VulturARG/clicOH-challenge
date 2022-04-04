@@ -1,55 +1,33 @@
 # Prueba de conocimiento con Django Rest Framework
 
-## Objetivo
-Analizar el nivel de conocimiento de los postulantes a desarrollador de backend Clicoh.
-
 ## Prueba lógica
 Crear una API REST utilizando DJANGO REST FRAMEWORK, que brinde la siguiente funcionalidad básica y acotada de un
 Ecommerce.
 
-El sistema debe tener los modelos `Product`, `Order`, `OrderDetail` con los siguientes atributos:
+Ver los [requerimientos del desafío](./instrucciones_desafio.md).
 
-Product:
-- id PK [string]
-- name [string]
-- price [float]
-- stock[int]
- 
-Order:
-- id PK
-- date_time [datetime]
+## Repositorio
+El código de este desafío se encuentra fue en el siguiente [repositorio de GitHub](https://github.com/VulturARG/clicOH-challenge/tree/development) en la rama `development`. 
 
-OrderDetail:
-- order [Order]
-- cuantity [int]
-- product [Product]
+## Implementación
+Ver las [instrucciones de implementación](./instrucciones_implementacion.md).
 
-La misma debe proporcionar los siguientes end points:
-* Registrar/Editar un producto
-* Eliminar un producto
-* Consultar un producto
-* Listar todos los productos
-* Modificar stock de un producto
-* Registrar/Editar una orden (inclusive sus detalles). Debe actualizar el stock del producto
-* Eliminar una orden. Restaura stock del producto
-* Consultar una orden y sus detalles
-* Listar todas las ordenes
+## Servidor de producción
+k k k k k 
 
-La clase Order debe exponer un método `get_total` el cual calcula el total de la factura y retornar ese valor en el serializer
-correspondiente. También debe exponer el método `get_total_usd`, utilizando el API de
-https://www.dolarsi.com/api/api.php?type=valoresprincipales, con “dólar blue” para que te tire el precio en dolares.
+## Criterio de diseño
+Se tomó como criterio de diseño separar la lógica de negocio del framework implementado. En este caso, Django Rest Framework.
 
-Al crear o editar una orden validar q haya suficiente stock del producto, en caso no contar con stock se debe retornar un
-error de validación.
+Para ello se usó el concepto de arquitectura hexagonal o de puertos y adaptadores.
 
-Para la implementación de la API se debe utilizar `ModelViewSet`, `ModelSerializer`.
+La misma consiste en tener toda la lógica de negocios en un dominio que no dependa de nada externo al mismo. 
+La lógica de negocios se encuentra en los diferentes servicios dentro del dominio. 
+La comunicación con el exterior se hace mediante puertos, que son clases abstractas. Comúnmente se llaman repositorios.
+Dichos puertos se implementan en adaptadores dentro del framework, logrando así una inversión de la dependencia.
 
-El código fuente de la api debe ser subido a un repositorio público, el cual debe ser proporcionado para su correcta
-examinación.
+Esto permite, entre otras ventajas, testear la lógica de negocios sin tener que depender de una implementación externa.
+Se pueden crear Mocks de las distintas clases sin inconvenientes.
 
-A la hora de crear una orden se debe validar:
-* que la cantidad de cada producto sea mayor a 0
-* que no se repitan productos en el mismo pedido
-* Implementar autenticación basada en tokens (JWT)
-* Deployar la api en producción, por ejemplo en heroku o https://www.pythonanywhere.com/,
-* Implementar test unitario para validar los endpoints.
+### Esquema de la arquitectura hexagonal.
+
+![](imgs/arquitectura_hexagonal.png)
