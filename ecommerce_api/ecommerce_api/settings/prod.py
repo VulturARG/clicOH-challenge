@@ -3,7 +3,8 @@ from .base import *
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = list(config('ALLOWED_HOSTS_PROD'))
+ALLOWED_HOSTS = [config('ALLOWED_HOSTS_PROD')]
+
 
 SECURE_SSL_REDIRECT = True
 CSRF_COOKIE_SECURE = True
