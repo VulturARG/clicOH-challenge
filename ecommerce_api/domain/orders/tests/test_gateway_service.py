@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import Mock
 
 from domain.gateway.dolarsi_gateway import DollarURLGateway
-from domain.orders.exceptions import DollarBluePriceNotFoundError
+from domain.gateway.exceptions import DollarBluePriceNotFoundError, DollarBluePriceIsZero
 from domain.orders.gateway_service import DollarValue
 
 
@@ -35,3 +35,11 @@ class GatewayServiceTestCase(unittest.TestCase):
 
         with self.assertRaises(DollarBluePriceNotFoundError):
             self.dollar_value.get_dollar_blue_price()
+
+    def test_get_total_usd(self):
+        actual = self.dollar_value.get_total_usd(total_order=400, dollar_blue_value=200)
+        self.assertEqual(2, actual)
+
+    def test_get_total_usd_dollar_blue_is_zero(self):
+        with self.assertRaises(DollarBluePriceIsZero):
+            actual = self.dollar_value.get_total_usd(total_order=400, dollar_blue_value=0)

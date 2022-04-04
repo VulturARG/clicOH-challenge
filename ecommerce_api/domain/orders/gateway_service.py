@@ -3,7 +3,7 @@ import json
 from requests import Response
 
 from domain.gateway.gateway import Gateway
-from domain.orders.exceptions import DollarBluePriceNotFoundError
+from domain.gateway.exceptions import DollarBluePriceNotFoundError, DollarBluePriceIsZero
 
 
 class DollarValue:
@@ -36,6 +36,12 @@ class DollarValue:
             pass
 
         raise DollarBluePriceNotFoundError()
+
+    def get_total_usd(self, total_order: float, dollar_blue_value: float) -> float:
+        try:
+            return total_order / dollar_blue_value
+        except ZeroDivisionError:
+            raise DollarBluePriceIsZero()
 
     def _comma_value_to_float(self, value: str) -> float:
         value.replace('.', '')

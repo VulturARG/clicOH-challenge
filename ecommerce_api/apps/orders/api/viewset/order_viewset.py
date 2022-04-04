@@ -183,14 +183,13 @@ class OrderAPIViewSet(viewsets.ModelViewSet):
         total_pesos = response.data['message']
 
         try:
-            dollar_blue_price = self._get_dolar_blue_price()
+            total_order_in_usd = self._get_total_order_in_usd(total_pesos)
         except (OrderException, GatewayException) as error:
             return Response({'message': error.MESSAGE}, status=status.HTTP_400_BAD_REQUEST)
 
-        total_usd = total_pesos * dollar_blue_price
-        return Response({'message': total_usd}, status=status.HTTP_200_OK)
+        return Response({'message': total_order_in_usd}, status=status.HTTP_200_OK)
 
-    def _get_dolar_blue_price(self) -> float:
+    def _get_total_order_in_usd(self, total_pesos: float) -> float:
         """Get dollar blue price for external API."""
 
         server_configuration = ServerConfiguration(
@@ -200,7 +199,8 @@ class OrderAPIViewSet(viewsets.ModelViewSet):
         )
         server_gateway = DollarURLGateway(server_configuration)
         dollar_value = DollarValue(server_gateway)
-        return dollar_value.get_dollar_blue_price()
+        dollar_blue_price = dollar_value.get_dollar_blue_price()
+        return dollar_value.get_total_usd(total_pesos, dollar_blue_price)
 
     def _get_order_detail(self, pk: Optional[int] = None) -> Any:
         """Get order details in an order"""

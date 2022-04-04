@@ -184,13 +184,3 @@ class OrderTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual({'message': 50.0}, response.data)
 
-    def test_get_total_usd(self):
-        response = self.client.get(self.get_total_usd_url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual({'message': 9950.0}, response.data)
-
-    def test_get_total_usd_bad_order(self):
-        response = self.client.get(self.get_total_usd_bad_url)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual({'message': 'order not found'}, response.data)
-
