@@ -12,6 +12,10 @@ El código de este desafío se encuentra fue en el siguiente [repositorio de Git
 ## Implementación
 Ver las [instrucciones de implementación](documentacion/instrucciones_implementacion.md).
 
+Para la implementación cree un [proyecto kanban](https://github.com/VulturARG/clicOH-challenge/projects/1) en projects de Github.
+Los requerimientos fueron escritos como diferentes [issues](https://github.com/VulturARG/clicOH-challenge/issues), 
+las cuales se fueron cerrando con la concreción de cada requerimiento. Esto se refleja automáticamente en el proyecto kanban.
+
 ## Servidor de producción
 ```
 luisbriones.pythonanywhere.com
