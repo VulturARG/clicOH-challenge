@@ -3,7 +3,10 @@ import json
 from requests import Response
 
 from domain.gateway.gateway import Gateway
-from domain.gateway.exceptions import DollarBluePriceNotFoundError, DollarBluePriceIsZero
+from domain.gateway.exceptions import (
+    DollarBluePriceNotFoundError,
+    DollarBluePriceIsZero,
+)
 
 
 class DollarValue:
@@ -46,4 +49,3 @@ class DollarValue:
     def _comma_value_to_float(self, value: str) -> float:
         value.replace('.', '')
         return float(value.replace(',', '.'))
-
