@@ -4,17 +4,18 @@
 Crear una API REST utilizando DJANGO REST FRAMEWORK, que brinde la siguiente funcionalidad básica y acotada de un
 Ecommerce.
 
-Ver los [requerimientos del desafío](./instrucciones_desafio.md).
+Ver los [requerimientos del desafío](documentacion/instrucciones_desafio.md).
 
 ## Repositorio
 El código de este desafío se encuentra fue en el siguiente [repositorio de GitHub](https://github.com/VulturARG/clicOH-challenge/tree/development) en la rama `development`. 
 
 ## Implementación
-Ver las [instrucciones de implementación](./instrucciones_implementacion.md).
+Ver las [instrucciones de implementación](documentacion/instrucciones_implementacion.md).
 
 ## Servidor de producción
-k k k k k 
-
+```
+luisbriones.pythonanywhere.com
+```
 ## Criterio de diseño
 Se tomó como criterio de diseño separar la lógica de negocio del framework implementado. En este caso, Django Rest Framework.
 
