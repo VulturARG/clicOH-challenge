@@ -55,7 +55,7 @@ Enviar un GET a la URL:
 ```bash
 https://luisbriones.pythonanywhere.com/v1/orders/1/get_total_usd/
 ```
-Debido a que la URL de la API externa no está en la withelist de pythonanywhere, 
+Debido a que la URL de la API externa no está en la whitelist de pythonanywhere, 
 al hacer esta petición desde una cuenta gratuita se obtiene un error de que no se puede acceder a la URL.
 Dicho error dispara la excepción OS Error, la cual es capturada y devuelta al cliente.
 ```json

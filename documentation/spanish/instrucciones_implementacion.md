@@ -53,8 +53,8 @@ Ejemplo de respuesta
 ### Order
 Las instrucciones se encuentran en el siguiente [archivo](orders.md)
 
-### Order
-Las instrucciones se encuentran en el siguiente [archivo](orders.md)
+### Product
+Las instrucciones se encuentran en el siguiente [archivo](products.md)
 
 ------------------------------------
 
