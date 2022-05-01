@@ -4,4 +4,4 @@
 
 # Django Rest Framework challenge
 
-English [README.md](documentation/english/README.md) en Español. 
+English [README.md](documentation/english/README.md). 
